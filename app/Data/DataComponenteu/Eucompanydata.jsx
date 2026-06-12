@@ -68,8 +68,8 @@ export default function EuCompanyData() {
               </span>{" "}
             </h2>
             <p className={styles.subtitle}>
-              Comprehensive overview of major EU food companies&apos; commitments
-              to reducing food waste
+              Comprehensive overview of major EU food companies&apos;
+              commitments to reducing food waste
             </p>
           </div>
           <Loading size="large" text="Loading company targets..." />
@@ -120,12 +120,12 @@ export default function EuCompanyData() {
           <h2 className={styles.title}>
             EU{" "}
             <span className={styles.highlight}>
-              Food Waste Reduction Targets
+              Food Waste Reduction Target
             </span>{" "}
           </h2>
           <p className={styles.subtitle}>
-            Comprehensive overview of major EU food companies&apos; commitments to
-            reducing food waste
+            Comprehensive overview of major EU food companies&apos; commitments
+            to reducing food waste
           </p>
         </div>
 
