@@ -18,6 +18,10 @@ const ukdocumentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    ESG: {
+      type: Number,
+      default: 0,
+    },
     other: {
       type: Number,
       default: 0,
@@ -26,7 +30,7 @@ const ukdocumentSchema = new mongoose.Schema(
 
   {
     collation: "ukdocuments",
-  }
+  },
 );
 
 module.exports =

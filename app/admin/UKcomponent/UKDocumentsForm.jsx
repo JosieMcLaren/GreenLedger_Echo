@@ -8,6 +8,7 @@ export default function UKDocumentsForm() {
     to: "",
     annualReport: "",
     sustainability: "",
+    ESG: "",
     other: "",
   });
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,7 @@ export default function UKDocumentsForm() {
       to: item.to || "",
       annualReport: item.annualReport || "",
       sustainability: item.sustainability || "",
+      ESG: item.ESG || "",
       other: item.other || "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -65,6 +67,7 @@ export default function UKDocumentsForm() {
       to: "",
       annualReport: "",
       sustainability: "",
+      ESG: "",
       other: "",
     });
     setMessage({ text: "", type: "" });
@@ -114,6 +117,7 @@ export default function UKDocumentsForm() {
       sustainability: formData.sustainability
         ? Number(formData.sustainability)
         : undefined,
+      ESG: formData.ESG ? Number(formData.ESG) : undefined,
       other: formData.other ? Number(formData.other) : undefined,
     };
 
@@ -143,6 +147,7 @@ export default function UKDocumentsForm() {
           to: "",
           annualReport: "",
           sustainability: "",
+          ESG: "",
           other: "",
         });
         setEditingId(null);
@@ -258,6 +263,21 @@ export default function UKDocumentsForm() {
                 min="0"
               />
             </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="ESG" className={styles.label}>
+                ESG
+              </label>
+              <input
+                type="number"
+                id="ESG"
+                name="ESG"
+                value={formData.ESG}
+                onChange={handleChange}
+                className={styles.input}
+                placeholder="Number of ESG reports"
+                min="0"
+              />
+            </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="other" className={styles.label}>
@@ -286,8 +306,8 @@ export default function UKDocumentsForm() {
                 ? "Updating..."
                 : "Submitting..."
               : editingId
-              ? "Update Document"
-              : "Submit Document"}
+                ? "Update Document"
+                : "Submit Document"}
           </button>
         </form>
       </div>
@@ -306,6 +326,10 @@ export default function UKDocumentsForm() {
               <span className={styles.statValue}>
                 {totals.totalSustainability}
               </span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>ESG Reports</span>
+              <span className={styles.statValue}>{totals.totalESG}</span>
             </div>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Other Documents</span>
@@ -337,6 +361,7 @@ export default function UKDocumentsForm() {
                   <th>Period</th>
                   <th>Annual Report</th>
                   <th>Sustainability</th>
+                  <th>ESG</th>
                   <th>Other</th>
                   <th>Total</th>
                   <th>Actions</th>
@@ -355,6 +380,7 @@ export default function UKDocumentsForm() {
                       </td>
                       <td>{item.annualReport || 0}</td>
                       <td>{item.sustainability || 0}</td>
+                      <td>{item.ESG || 0}</td>
                       <td>{item.other || 0}</td>
                       <td className={styles.totalCell}>{total}</td>
                       <td>
@@ -384,4 +410,3 @@ export default function UKDocumentsForm() {
     </div>
   );
 }
-

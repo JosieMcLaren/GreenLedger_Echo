@@ -167,20 +167,23 @@ export default function EUCharitiesForm() {
 
   const handleAddCompany = async (e) => {
     e.preventDefault();
-    
+
     if (!newCompanyName.trim()) return;
 
     try {
-      const response = await fetch(`/api/EU/editeucharity/${selectedCharityId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/EU/editeucharity/${selectedCharityId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "add-company",
+            company: newCompanyName.trim(),
+          }),
         },
-        body: JSON.stringify({
-          action: "add-company",
-          company: newCompanyName.trim(),
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -255,16 +258,19 @@ export default function EUCharitiesForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/api/EU/editeucharity/${selectedCharityId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/EU/editeucharity/${selectedCharityId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "update-Url",
+            Url: editUrlValue,
+          }),
         },
-        body: JSON.stringify({
-          action: "update-Url",
-          Url: editUrlValue,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -531,14 +537,12 @@ export default function EUCharitiesForm() {
                           setExpandedCharity(
                             expandedCharity === charity._id
                               ? null
-                              : charity._id
+                              : charity._id,
                           )
                         }
                         className={styles.expandButton}
                       >
-                        {expandedCharity === charity._id
-                          ? "▲ Hide"
-                          : "▼ Show"}{" "}
+                        {expandedCharity === charity._id ? "▲ Hide" : "▼ Show"}{" "}
                         Companies
                       </button>
                     </div>
@@ -578,5 +582,3 @@ export default function EUCharitiesForm() {
     </>
   );
 }
-
-

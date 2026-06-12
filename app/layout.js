@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "WasteWatch - Corporate Food Waste Reporting Platform",
+  title: "Wastefoodreporting - Corporate Food Waste Reporting Platform",
   description:
     "Track, report, and reduce food waste through data-driven insights. Empowering UK and EU companies toward sustainable action and UN SDG 12.3.",
 };

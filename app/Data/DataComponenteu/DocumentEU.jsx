@@ -107,13 +107,13 @@ export default function DocumentEU() {
                   name="Sustainability Reports"
                   radius={[0, 0, 0, 0]}
                 />
-                <Bar
+                {/* <Bar
                   dataKey="integratedReport"
                   stackId="a"
                   fill="#8b5cf6"
                   name="Integrated Report"
                   radius={[0, 0, 0, 0]}
-                />
+                /> */}
                 <Bar
                   dataKey="other"
                   stackId="a"
@@ -139,10 +139,10 @@ export default function DocumentEU() {
             <div className={styles.statValue}>{totalSustainability}</div>
             <div className={styles.statLabel}>Sustainability Reports</div>
           </div>
-          <div className={styles.statCard}>
+          {/* <div className={styles.statCard}>
             <div className={styles.statValue}>{totalIntegrated}</div>
             <div className={styles.statLabel}>Integrated Reports</div>
-          </div>
+          </div> */}
           <div className={styles.statCard}>
             <div className={styles.statValue}>{totalOther}</div>
             <div className={styles.statLabel}>Other Documents</div>

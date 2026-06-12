@@ -2,10 +2,20 @@
 import { useState, useEffect } from "react";
 import styles from "./UKSupermarketForm.module.css";
 
+const SECTOR_OPTIONS = [
+  { value: "", label: "Untagged" },
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
 export default function UKSupermarketForm() {
   const [formData, setFormData] = useState({
     company: "",
     color: "#3498db",
+    sector: "",
   });
   const [dataEntries, setDataEntries] = useState([
     {
@@ -97,6 +107,7 @@ export default function UKSupermarketForm() {
     setFormData({
       company: company.company,
       color: company.color,
+      sector: company.sector || "",
     });
     setDataEntries([
       {
@@ -121,7 +132,7 @@ export default function UKSupermarketForm() {
     setEditingCompanyInfo(false);
     setEditingYear(null);
     setAddingYearMode(false);
-    setFormData({ company: "", color: "#3498db" });
+    setFormData({ company: "", color: "#3498db", sector: "" });
     setDataEntries([
       {
         from: "",
@@ -141,7 +152,9 @@ export default function UKSupermarketForm() {
   };
 
   const handleDeleteCompany = async (id) => {
-    if (!confirm("Are you sure you want to delete this company and all its data?")) {
+    if (
+      !confirm("Are you sure you want to delete this company and all its data?")
+    ) {
       return;
     }
 
@@ -186,7 +199,10 @@ export default function UKSupermarketForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ text: "Year data deleted successfully!", type: "success" });
+        setMessage({
+          text: "Year data deleted successfully!",
+          type: "success",
+        });
         fetchData();
       } else {
         setMessage({
@@ -206,11 +222,12 @@ export default function UKSupermarketForm() {
     setEditingCompanyId(companyId);
     setEditingYear({ from: yearData.from, to: yearData.to });
     setEditingCompanyInfo(false);
-    
-    const company = existingData.find(c => c._id === companyId);
+
+    const company = existingData.find((c) => c._id === companyId);
     setFormData({
       company: company.company,
       color: company.color,
+      sector: company.sector || "",
     });
 
     setDataEntries([
@@ -247,13 +264,17 @@ export default function UKSupermarketForm() {
           body: JSON.stringify({
             company: formData.company,
             color: formData.color,
+            sector: formData.sector,
           }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          setMessage({ text: "Company info updated successfully!", type: "success" });
+          setMessage({
+            text: "Company info updated successfully!",
+            type: "success",
+          });
           handleCancelEdit();
           fetchData();
         } else {
@@ -276,20 +297,33 @@ export default function UKSupermarketForm() {
           unsoldFood: entry.unsoldFood ? Number(entry.unsoldFood) : 0,
           foodSurplus: entry.foodSurplus ? Number(entry.foodSurplus) : 0,
           foodWaste: entry.foodWaste ? Number(entry.foodWaste) : 0,
-          foodWastePerHandled: entry.foodWastePerHandled ? Number(entry.foodWastePerHandled) : 0,
-          unsoldFoodPerHandled: entry.unsoldFoodPerHandled ? Number(entry.unsoldFoodPerHandled) : 0,
-          foodWasteToAnimalFeed: entry.foodWasteToAnimalFeed ? Number(entry.foodWasteToAnimalFeed) : 0,
-          humanRedistribution: entry.humanRedistribution ? Number(entry.humanRedistribution) : 0,
-          foodWasteReductionRate: entry.foodWasteReductionRate ? Number(entry.foodWasteReductionRate) : 0,
+          foodWastePerHandled: entry.foodWastePerHandled
+            ? Number(entry.foodWastePerHandled)
+            : 0,
+          unsoldFoodPerHandled: entry.unsoldFoodPerHandled
+            ? Number(entry.unsoldFoodPerHandled)
+            : 0,
+          foodWasteToAnimalFeed: entry.foodWasteToAnimalFeed
+            ? Number(entry.foodWasteToAnimalFeed)
+            : 0,
+          humanRedistribution: entry.humanRedistribution
+            ? Number(entry.humanRedistribution)
+            : 0,
+          foodWasteReductionRate: entry.foodWasteReductionRate
+            ? Number(entry.foodWasteReductionRate)
+            : 0,
         };
 
-        const response = await fetch(`/api/editukcom/${editingCompanyId}/add-year`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `/api/editukcom/${editingCompanyId}/add-year`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newYearData),
           },
-          body: JSON.stringify(newYearData),
-        });
+        );
 
         const data = await response.json();
 
@@ -315,29 +349,45 @@ export default function UKSupermarketForm() {
           unsoldFood: entry.unsoldFood ? Number(entry.unsoldFood) : 0,
           foodSurplus: entry.foodSurplus ? Number(entry.foodSurplus) : 0,
           foodWaste: entry.foodWaste ? Number(entry.foodWaste) : 0,
-          foodWastePerHandled: entry.foodWastePerHandled ? Number(entry.foodWastePerHandled) : 0,
-          unsoldFoodPerHandled: entry.unsoldFoodPerHandled ? Number(entry.unsoldFoodPerHandled) : 0,
-          foodWasteToAnimalFeed: entry.foodWasteToAnimalFeed ? Number(entry.foodWasteToAnimalFeed) : 0,
-          humanRedistribution: entry.humanRedistribution ? Number(entry.humanRedistribution) : 0,
-          foodWasteReductionRate: entry.foodWasteReductionRate ? Number(entry.foodWasteReductionRate) : 0,
+          foodWastePerHandled: entry.foodWastePerHandled
+            ? Number(entry.foodWastePerHandled)
+            : 0,
+          unsoldFoodPerHandled: entry.unsoldFoodPerHandled
+            ? Number(entry.unsoldFoodPerHandled)
+            : 0,
+          foodWasteToAnimalFeed: entry.foodWasteToAnimalFeed
+            ? Number(entry.foodWasteToAnimalFeed)
+            : 0,
+          humanRedistribution: entry.humanRedistribution
+            ? Number(entry.humanRedistribution)
+            : 0,
+          foodWasteReductionRate: entry.foodWasteReductionRate
+            ? Number(entry.foodWasteReductionRate)
+            : 0,
         };
 
-        const response = await fetch(`/api/editukcom/${editingCompanyId}/update-year`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `/api/editukcom/${editingCompanyId}/update-year`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: Number(entry.from),
+              to: Number(entry.to),
+              updates,
+            }),
           },
-          body: JSON.stringify({
-            from: Number(entry.from),
-            to: Number(entry.to),
-            updates,
-          }),
-        });
+        );
 
         const data = await response.json();
 
         if (response.ok) {
-          setMessage({ text: "Year data updated successfully!", type: "success" });
+          setMessage({
+            text: "Year data updated successfully!",
+            type: "success",
+          });
           handleCancelEdit();
           fetchData();
         } else {
@@ -380,6 +430,7 @@ export default function UKSupermarketForm() {
       const submitData = {
         company: formData.company,
         color: formData.color,
+        sector: formData.sector,
         data: processedData,
       };
 
@@ -398,7 +449,7 @@ export default function UKSupermarketForm() {
           text: "Company created successfully!",
           type: "success",
         });
-        setFormData({ company: "", color: "#3498db" });
+        setFormData({ company: "", color: "#3498db", sector: "" });
         setDataEntries([
           {
             from: "",
@@ -439,6 +490,7 @@ export default function UKSupermarketForm() {
     setFormData({
       company: company.company,
       color: company.color,
+      sector: company.sector || "",
     });
     setDataEntries([
       {
@@ -461,7 +513,8 @@ export default function UKSupermarketForm() {
   const getFormTitle = () => {
     if (editingCompanyInfo) return "Edit Company Info (Name & Color)";
     if (addingYearMode) return `Add New Year to ${formData.company}`;
-    if (editingYear) return `Edit Year Data (${editingYear.from}-${editingYear.to})`;
+    if (editingYear)
+      return `Edit Year Data (${editingYear.from}-${editingYear.to})`;
     return "Add New UK Supermarket Company";
   };
 
@@ -495,8 +548,8 @@ export default function UKSupermarketForm() {
               {editingCompanyInfo
                 ? "Editing company info only"
                 : addingYearMode
-                ? `Adding new year entry to ${formData.company}`
-                : `Editing year ${editingYear?.from}-${editingYear?.to}`}
+                  ? `Adding new year entry to ${formData.company}`
+                  : `Editing year ${editingYear?.from}-${editingYear?.to}`}
             </span>
             <button
               type="button"
@@ -558,6 +611,25 @@ export default function UKSupermarketForm() {
                   />
                 </div>
               </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="sector" className={styles.label}>
+                  Sector Tag
+                </label>
+                <select
+                  id="sector"
+                  name="sector"
+                  value={formData.sector}
+                  onChange={handleChange}
+                  className={styles.input}
+                  disabled={editingYear || addingYearMode}
+                >
+                  {SECTOR_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -569,8 +641,8 @@ export default function UKSupermarketForm() {
                   {editingYear
                     ? "Year Data"
                     : addingYearMode
-                    ? "New Year Entry"
-                    : "Data Entries by Year"}
+                      ? "New Year Entry"
+                      : "Data Entries by Year"}
                 </h3>
                 {!editingYear && !addingYearMode && (
                   <button
@@ -590,18 +662,20 @@ export default function UKSupermarketForm() {
                       {editingYear
                         ? "Year Data"
                         : addingYearMode
-                        ? "New Year Entry"
-                        : `Entry #${index + 1}`}
+                          ? "New Year Entry"
+                          : `Entry #${index + 1}`}
                     </span>
-                    {!editingYear && !addingYearMode && dataEntries.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeDataEntry(index)}
-                        className={styles.removeButton}
-                      >
-                        × Remove Entry
-                      </button>
-                    )}
+                    {!editingYear &&
+                      !addingYearMode &&
+                      dataEntries.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeDataEntry(index)}
+                          className={styles.removeButton}
+                        >
+                          × Remove Entry
+                        </button>
+                      )}
                   </div>
 
                   {/* Year Range */}
@@ -652,7 +726,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "foodHandled",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -670,7 +744,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "unsoldFood",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -688,7 +762,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "foodSurplus",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -703,7 +777,11 @@ export default function UKSupermarketForm() {
                         step="any"
                         value={entry.foodWaste}
                         onChange={(e) =>
-                          handleDataEntryChange(index, "foodWaste", e.target.value)
+                          handleDataEntryChange(
+                            index,
+                            "foodWaste",
+                            e.target.value,
+                          )
                         }
                         className={styles.input}
                         placeholder="0"
@@ -722,7 +800,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "foodWastePerHandled",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -742,7 +820,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "unsoldFoodPerHandled",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -762,7 +840,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "foodWasteToAnimalFeed",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -782,7 +860,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "humanRedistribution",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -802,7 +880,7 @@ export default function UKSupermarketForm() {
                           handleDataEntryChange(
                             index,
                             "foodWasteReductionRate",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className={styles.input}
@@ -874,7 +952,7 @@ export default function UKSupermarketForm() {
                     <button
                       onClick={() =>
                         setExpandedCompany(
-                          expandedCompany === company._id ? null : company._id
+                          expandedCompany === company._id ? null : company._id,
                         )
                       }
                       className={styles.expandButton}
@@ -932,7 +1010,7 @@ export default function UKSupermarketForm() {
                                     handleDeleteYear(
                                       company._id,
                                       entry.from,
-                                      entry.to
+                                      entry.to,
                                     )
                                   }
                                   className={styles.deleteYearButton}

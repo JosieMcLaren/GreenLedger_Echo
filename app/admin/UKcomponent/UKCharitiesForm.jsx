@@ -167,7 +167,7 @@ export default function UKCharitiesForm() {
 
   const handleAddCompany = async (e) => {
     e.preventDefault();
-    
+
     if (!newCompanyName.trim()) return;
 
     try {
@@ -531,14 +531,12 @@ export default function UKCharitiesForm() {
                           setExpandedCharity(
                             expandedCharity === charity._id
                               ? null
-                              : charity._id
+                              : charity._id,
                           )
                         }
                         className={styles.expandButton}
                       >
-                        {expandedCharity === charity._id
-                          ? "▲ Hide"
-                          : "▼ Show"}{" "}
+                        {expandedCharity === charity._id ? "▲ Hide" : "▼ Show"}{" "}
                         Companies
                       </button>
                     </div>
@@ -578,5 +576,3 @@ export default function UKCharitiesForm() {
     </>
   );
 }
-
-

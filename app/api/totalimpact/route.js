@@ -32,13 +32,13 @@ export async function GET() {
           totalHumanRedistribution / 1e6
         ).toFixed(2),
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

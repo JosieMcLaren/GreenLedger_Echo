@@ -178,7 +178,7 @@ export default function EUAlliancesForm() {
             action: "add-company",
             company: newCompanyName.trim(),
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -265,7 +265,7 @@ export default function EUAlliancesForm() {
             action: "update-link",
             link: editLinkValue,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -533,7 +533,7 @@ export default function EUAlliancesForm() {
                           setExpandedAlliance(
                             expandedAlliance === alliance._id
                               ? null
-                              : alliance._id
+                              : alliance._id,
                           )
                         }
                         className={styles.expandButton}
@@ -580,4 +580,3 @@ export default function EUAlliancesForm() {
     </>
   );
 }
-

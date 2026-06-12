@@ -13,7 +13,7 @@ const ipRequestMap = new Map();
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
   // console.log("MIDDLEWARE HIT:", pathname);
-
+  //protected paths
   const protectedPaths = [
     "/api/admin",
     "/api/ukdata",

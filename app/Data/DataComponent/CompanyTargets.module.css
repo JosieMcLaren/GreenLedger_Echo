@@ -48,6 +48,221 @@
   margin: 0 auto;
 }
 
+/* Sector filter */
+.sectorToolbar {
+  margin: 0 auto 2rem;
+  max-width: 720px;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  border-radius: 16px;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.12);
+}
+
+.sectorToolbarInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  justify-content: center;
+}
+
+.sectorIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  font-size: 1rem;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+}
+
+.sectorToolbarText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: left;
+  flex: 1;
+  min-width: 140px;
+}
+
+.sectorEyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #16a34a;
+}
+
+.sectorPrompt {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.selectWrap {
+  position: relative;
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.selectWrap::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #16a34a;
+  pointer-events: none;
+}
+
+.sectorSelect {
+  appearance: none;
+  width: 100%;
+  padding: 0.75rem 2.75rem 0.75rem 1rem;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #14532d;
+  background: #fff;
+  border: 2px solid #86efac;
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.08);
+}
+
+.sectorSelect:hover {
+  border-color: #4ade80;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+}
+
+.sectorSelect:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+}
+
+.sectorSelect option {
+  font-weight: 500;
+}
+
+/* Empty sector state */
+.emptyState {
+  position: relative;
+  text-align: center;
+  padding: 3rem 2rem;
+  margin: 0 auto;
+  max-width: 520px;
+  border-radius: 20px;
+  background: radial-gradient(
+      ellipse 120% 80% at 50% 0%,
+      rgba(34, 197, 94, 0.14),
+      transparent 55%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  border: 1px dashed #86efac;
+  overflow: hidden;
+}
+
+.emptyState::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.45),
+    rgba(59, 130, 246, 0.2),
+    rgba(34, 197, 94, 0.35)
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+  animation: emptyBorderShift 8s ease-in-out infinite;
+}
+
+@keyframes emptyBorderShift {
+  0%,
+  100% {
+    opacity: 0.55;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    opacity: 0.85;
+    filter: hue-rotate(25deg);
+  }
+}
+
+.emptyStateIconRing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border: 2px solid #4ade80;
+  font-size: 1.75rem;
+  animation: emptyPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes emptyPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 12px rgba(34, 197, 94, 0);
+  }
+}
+
+.emptyStateTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #166534;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.emptyStateHint {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.emptyStateAccent {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #15803d;
+  background: #ecfdf5;
+  border-radius: 999px;
+  border: 1px solid #a7f3d0;
+}
+
 .tableWrapper {
   background: white;
   border-radius: 16px;
@@ -410,5 +625,18 @@
 
   .errorMessage {
     font-size: 1rem;
+  }
+
+  .sectorToolbarInner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sectorToolbarText {
+    text-align: center;
+  }
+
+  .selectWrap {
+    max-width: none;
   }
 }

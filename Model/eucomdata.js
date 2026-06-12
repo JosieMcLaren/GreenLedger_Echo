@@ -49,10 +49,13 @@ const eucomdataSchema = new mongoose.Schema({
 });
 
 const euComdataSchema = new mongoose.Schema({
+  sector: {
+    type: String,
+    default: "",
+  },
   company: {
     type: String,
     required: true,
-    unique: true,
   },
   color: {
     type: String,

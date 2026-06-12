@@ -3,9 +3,6 @@
 import Image from "next/image";
 import styles from "./Footer.module.css";
 import logo from "../Images/Logowaste.png";
-import { FaTwitter, FaLinkedin, FaFacebook, FaInstagram } from "react-icons/fa";
-import { IoMdMail, IoMdCall } from "react-icons/io";
-import { IoLocationSharp } from "react-icons/io5";
 
 import Link from "next/link";
 

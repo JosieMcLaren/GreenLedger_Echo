@@ -13,7 +13,7 @@ const eualianceschema = new mongoose.Schema(
   },
   {
     collection: "eualiance",
-  }
+  },
 );
 module.exports =
   mongoose.models.eualiance || mongoose.model("eualiance", eualianceschema);

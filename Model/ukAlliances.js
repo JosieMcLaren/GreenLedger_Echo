@@ -14,7 +14,7 @@ const ukAlliancesSchema = new mongoose.Schema(
   },
   {
     collection: "ukalliances",
-  }
+  },
 );
 module.exports =
   mongoose.models.ukAlliances ||

@@ -2,10 +2,20 @@
 import { useState, useEffect } from "react";
 import styles from "./UKDataForm.module.css";
 
+const SECTOR_OPTIONS = [
+  { value: "", label: "Untagged" },
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
 export default function UKDataForm() {
   const [formData, setFormData] = useState({
     name: "",
     Baseline: "",
+    sector: "",
   });
   const [targets, setTargets] = useState([""]);
   const [targetYears, setTargetYears] = useState([""]);
@@ -100,12 +110,13 @@ export default function UKDataForm() {
     setFormData({
       name: item.name,
       Baseline: item.Baseline || "",
+      sector: item.sector || "",
     });
     setTargets(item.Target && item.Target.length > 0 ? item.Target : [""]);
     setTargetYears(
       item.Targetyear && item.Targetyear.length > 0
         ? item.Targetyear.map(String)
-        : [""]
+        : [""],
     );
     setMetrics(item.Metric && item.Metric.length > 0 ? item.Metric : [""]);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -113,7 +124,7 @@ export default function UKDataForm() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ name: "", Baseline: "" });
+    setFormData({ name: "", Baseline: "", sector: "" });
     setTargets([""]);
     setTargetYears([""]);
     setMetrics([""]);
@@ -161,6 +172,7 @@ export default function UKDataForm() {
       Target: targets.filter((t) => t.trim() !== ""),
       Targetyear: targetYears.filter((y) => y !== "").map((y) => Number(y)),
       Metric: metrics.filter((m) => m.trim() !== ""),
+      sector: formData.sector,
     };
 
     try {
@@ -187,6 +199,7 @@ export default function UKDataForm() {
         setFormData({
           name: "",
           Baseline: "",
+          sector: "",
         });
         setTargets([""]);
         setTargetYears([""]);
@@ -265,6 +278,25 @@ export default function UKDataForm() {
               className={styles.input}
               placeholder="Enter baseline value"
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="sector" className={styles.label}>
+              Sector Tag
+            </label>
+            <select
+              id="sector"
+              name="sector"
+              value={formData.sector}
+              onChange={handleChange}
+              className={styles.input}
+            >
+              {SECTOR_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Targets Section */}
@@ -384,8 +416,8 @@ export default function UKDataForm() {
                 ? "Updating..."
                 : "Submitting..."
               : editingId
-              ? "Update Data"
-              : "Submit Data"}
+                ? "Update Data"
+                : "Submit Data"}
           </button>
         </form>
       </div>
@@ -406,6 +438,7 @@ export default function UKDataForm() {
               <thead>
                 <tr>
                   <th>Company Name</th>
+                  <th>Sector</th>
                   <th>Baseline</th>
                   <th>Targets</th>
                   <th>Target Years</th>
@@ -417,6 +450,7 @@ export default function UKDataForm() {
                 {existingData.map((item) => (
                   <tr key={item._id}>
                     <td className={styles.companyName}>{item.name}</td>
+                    <td>{item.sector || "Untagged"}</td>
                     <td>{item.Baseline || "N/A"}</td>
                     <td>
                       {item.Target && item.Target.length > 0 ? (
@@ -477,4 +511,3 @@ export default function UKDataForm() {
     </div>
   );
 }
-

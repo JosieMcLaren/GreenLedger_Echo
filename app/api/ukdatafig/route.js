@@ -15,12 +15,17 @@ export async function GET() {
         if (entry.to > maxTo) maxTo = entry.to;
       });
     });
+    if (!minFrom && !maxTo) {
+      console.log("id is not found sorry");
+    } else {
+      //  console.log("go ahned with the chasnges you want tnx see you there ");
+    }
 
     return NextResponse.json({ minFrom, maxTo }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

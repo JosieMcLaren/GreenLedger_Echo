@@ -54,16 +54,15 @@ export default function Hero() {
           </div>
 
           <h1 className={styles.heroTitle}>
-            Transform Your <span className={styles.highlight}>Food Waste</span>
+            Corporate <span className={styles.highlight}>Food Waste</span>
             <br />
-            Into Sustainable Action
+            Reporting Research
           </h1>
 
           <p className={styles.heroDescription}>
-            The Corporate Food Waste Reporting Platform empowers UK and EU
-            companies to track, report, and reduce food waste through
-            data-driven insights. Join the movement towards UN SDG 12.3 and
-            build a zero-waste future.
+            A research platform tracking how UK and EU food retailers publicly
+            report food waste data. Exploring corporate transparency in line
+            with UN SDG 12.3 targets.
           </p>
 
           <div className={styles.heroButtons}>

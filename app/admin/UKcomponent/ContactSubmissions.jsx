@@ -34,6 +34,34 @@ export default function ContactSubmissions() {
     }
   };
 
+  const handleDelete = async (contactId) => {
+    if (!window.confirm("Are you sure you want to delete this submission?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/delcontact/${contactId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Contact submission deleted successfully!");
+        // Remove the deleted contact from the state
+        setContacts(contacts.filter((contact) => contact._id !== contactId));
+        // If the deleted contact was expanded, close it
+        if (expandedContact === contactId) {
+          setExpandedContact(null);
+        }
+      } else {
+        const data = await response.json();
+        alert(data.message || "Failed to delete contact submission");
+      }
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+      alert("An error occurred while deleting the submission");
+    }
+  };
+
   const filteredContacts = contacts.filter((contact) =>
     filterEmail
       ? contact.email.toLowerCase().includes(filterEmail.toLowerCase()) ||
@@ -153,6 +181,12 @@ export default function ContactSubmissions() {
                       className={styles.copyButton}
                     >
                       📋 Copy Email
+                    </button>
+                    <button
+                      onClick={() => handleDelete(contact._id)}
+                      className={styles.deleteButton}
+                    >
+                      🗑️ Delete
                     </button>
                   </div>
                 </div>

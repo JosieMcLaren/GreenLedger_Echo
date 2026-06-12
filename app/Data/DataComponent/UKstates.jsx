@@ -22,7 +22,7 @@ export default function UKStates() {
   }, [fetchYearRange]);
   // State management
   const [selectedMetric, setSelectedMetric] = useState(
-    "foodWasteReductionRate"
+    "foodWasteReductionRate",
   );
   const [selectedCompanies, setSelectedCompanies] = useState([
     "Sainsbury",
@@ -127,7 +127,7 @@ export default function UKStates() {
         const companyData = Ukdata.find((c) => c.company === company);
         if (companyData) {
           const yearData = companyData.data.find(
-            (d) => d.from === from && d.to === to
+            (d) => d.from === from && d.to === to,
           );
           if (yearData) {
             let value = yearData[selectedMetric];

@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../lib/db.js";
 import ukdata from "../../../Model/ukdocument.js";
 export async function POST(request) {
-  const { from, to, annualReport, sustainability, other } =
+  const { from, to, annualReport, sustainability, ESG, other } =
     await request.json();
   if (!from || !to) {
     return NextResponse.json(
       { message: "From and To years are required." },
-      { status: 400 }
+      { status: 400 },
     );
   }
+
   try {
     await connectToDatabase();
     const newUkdata = new ukdata({
@@ -17,17 +18,18 @@ export async function POST(request) {
       to,
       annualReport,
       sustainability,
+      ESG,
       other,
     });
     await newUkdata.save();
     return NextResponse.json(
       { message: "Data saved successfully." },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -38,15 +40,17 @@ export async function GET() {
     const data = await ukdata.find({});
     const totalAnnual = data.reduce(
       (sum, doc) => sum + (doc.annualReport || 0),
-      0
+      0,
     );
     const totalSustainability = data.reduce(
       (sum, doc) => sum + (doc.sustainability || 0),
-      0
+      0,
     );
     const totalOther = data.reduce((sum, doc) => sum + (doc.other || 0), 0);
+    const totalESG = data.reduce((sum, doc) => sum + (doc.ESG || 0), 0);
 
-    const totalReports = totalAnnual + totalSustainability + totalOther;
+    const totalReports =
+      totalAnnual + totalSustainability + totalOther + totalESG;
 
     return NextResponse.json(
       {
@@ -55,15 +59,16 @@ export async function GET() {
           totalAnnual,
           totalSustainability,
           totalOther,
+          totalESG,
           totalReports,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

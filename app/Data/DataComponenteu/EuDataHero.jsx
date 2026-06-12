@@ -11,8 +11,7 @@ export default function EuDataHero() {
         <div className={styles.content}>
           <span className={styles.badge}>European Union Data</span>
           <h1 className={styles.title}>
-            EU Sustainability{" "}
-            <span className={styles.highlight}>Data Hub</span>
+            EU Sustainability <span className={styles.highlight}>Data Hub</span>
           </h1>
           <p className={styles.description}>
             Explore comprehensive sustainability commitments and environmental
@@ -66,4 +65,3 @@ export default function EuDataHero() {
     </section>
   );
 }
-

@@ -1,36 +1,44 @@
 "use client";
 
 import styles from "./Features.module.css";
-import {
-  FaChartLine,
-  FaLeaf,
-  FaBullseye,
-  FaRobot,
-  FaFileAlt,
-  FaUsers,
-} from "react-icons/fa";
+import { useImpact } from "../store/impact.js";
+import { useEffect } from "react";
+import { GiEarthAfricaEurope } from "react-icons/gi";
+import { FaRecycle, FaHandHoldingHeart } from "react-icons/fa";
 
 export default function Features() {
-  const features = [
+  const {
+    totalFoodHandledInBillions,
+    totalUnsoldFoodInBillions,
+    totalHumanRedistributionInBillions,
+    fetchTotalimpact,
+  } = useImpact();
+
+  useEffect(() => {
+    fetchTotalimpact();
+  }, [fetchTotalimpact]);
+
+  const impacts = [
     {
-      icon: <FaChartLine />,
-      title: "Real-Time Tracking",
-      description: "monitor publicly reported food waste metrics",
+      icon: <GiEarthAfricaEurope />,
+      value: totalFoodHandledInBillions + "B",
+      label: "Food handled (Tonnes)",
+      description: "Total Food handled across UK and EU food retailers",
       color: "#22c55e",
     },
     {
-      icon: <FaLeaf />,
-      title: "Sustainability Goals",
-      description:
-        "Set and track reduction targets aligned with UN SDG 12.3 and global sustainability initiatives by food retailers.",
-      color: "#16a34a",
+      icon: <FaRecycle />,
+      value: totalUnsoldFoodInBillions + "M",
+      label: "Unsold food (Tonnes)",
+      description: "Total unsold food across UK and EU food retailers",
+      color: "#3b82f6",
     },
     {
-      icon: <FaBullseye />,
-      title: "Target Management",
-      description:
-        "Define custom waste reduction goals and monitor progress with detailed metrics and insights.",
-      color: "#15803d",
+      icon: <FaHandHoldingHeart />,
+      value: totalHumanRedistributionInBillions + "M",
+      label: "Human redistribution (Tonnes)",
+      description: "Food redirected to communities in need",
+      color: "#f59e0b",
     },
   ];
 
@@ -40,24 +48,28 @@ export default function Features() {
         <div className={styles.sectionHeader}>
           <span className={styles.badge}>Features</span>
           <h2 className={styles.title}>
-            Everything You Need to{" "}
-            <span className={styles.highlight}>Reduce Food Waste</span>
+            Making a <span className={styles.highlight}>Real Difference</span>
           </h2>
+          <p className={styles.subtitle}>
+            The companies tracked are reporting measurable progress in the fight
+            against food waste
+          </p>
         </div>
 
         <div className={styles.featuresGrid}>
-          {features.map((feature, index) => (
+          {impacts.map((impact, index) => (
             <div key={index} className={styles.featureCard}>
               <div
                 className={styles.iconWrapper}
-                style={{ backgroundColor: `${feature.color}15` }}
+                style={{ backgroundColor: `${impact.color}15` }}
               >
-                <div className={styles.icon} style={{ color: feature.color }}>
-                  {feature.icon}
+                <div className={styles.icon} style={{ color: impact.color }}>
+                  {impact.icon}
                 </div>
               </div>
-              <h3 className={styles.featureTitle}>{feature.title}</h3>
-              <p className={styles.featureDescription}>{feature.description}</p>
+              <h3 className={styles.value}>{impact.value}</h3>
+              <p className={styles.label}>{impact.label}</p>
+              <p className={styles.featureDescription}>{impact.description}</p>
             </div>
           ))}
         </div>

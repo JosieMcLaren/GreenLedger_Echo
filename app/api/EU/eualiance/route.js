@@ -8,7 +8,7 @@ export async function POST(request) {
   if (!name || !companies) {
     return NextResponse.json(
       { message: "Name and companies are required fields." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   try {
@@ -17,7 +17,7 @@ export async function POST(request) {
     if (existingAlliance) {
       return NextResponse.json(
         { message: "Alliance already exists." },
-        { status: 409 }
+        { status: 409 },
       );
     }
     const newAlliance = new eualliances({
@@ -28,12 +28,12 @@ export async function POST(request) {
     await newAlliance.save();
     return NextResponse.json(
       { message: "UK Alliance data saved successfully." },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -46,7 +46,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

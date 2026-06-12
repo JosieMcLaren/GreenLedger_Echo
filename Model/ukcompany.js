@@ -49,10 +49,13 @@ const ukDataItemSchema = new mongoose.Schema({
 });
 
 const ukCompanySchema = new mongoose.Schema({
+  sector: {
+    type: String,
+    default: "",
+  },
   company: {
     type: String,
     required: true,
-    unique: true,
   },
   color: {
     type: String,
