@@ -53,7 +53,7 @@ export default function DocumentEU() {
           </h2>
           <p className={styles.subtitle}>
             Evolution of sustainability reporting documentation across European
-            retailers
+            food companies
           </p>
         </div>
 

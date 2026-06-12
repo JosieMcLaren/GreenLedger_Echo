@@ -131,7 +131,7 @@ export default function Alliances() {
           </h2>
           <p className={styles.subtitle}>
             Key non-profit organisations and charities working with our sample
-            of UK retailers to combat food waste
+            of UK food companies to combat food waste
           </p>
         </div>
 
@@ -364,7 +364,7 @@ export default function Alliances() {
         <div className={styles.disclaimer}>
           <p className={styles.disclaimerText}>
             <strong>Note:</strong> As reported by the food retail companies in
-            our sample. Retailers may have other alliances and Charity Partners.
+            our sample. Food companies may have other alliances and charity partners.
           </p>
         </div>
       </div>

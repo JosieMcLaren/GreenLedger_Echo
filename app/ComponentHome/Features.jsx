@@ -23,14 +23,14 @@ export default function Features() {
       icon: <GiEarthAfricaEurope />,
       value: totalFoodHandledInBillions + "B",
       label: "Food handled (Tonnes)",
-      description: "Total Food handled across UK and EU food retailers",
+      description: "Total food handled across UK and EU food companies",
       color: "#22c55e",
     },
     {
       icon: <FaRecycle />,
       value: totalUnsoldFoodInBillions + "M",
       label: "Unsold food (Tonnes)",
-      description: "Total unsold food across UK and EU food retailers",
+      description: "Total unsold food across UK and EU food companies",
       color: "#3b82f6",
     },
     {

@@ -60,9 +60,9 @@ export default function Hero() {
           </h1>
 
           <p className={styles.heroDescription}>
-            A research platform tracking how UK and EU food retailers publicly
-            report food waste data. Exploring corporate transparency in line
-            with UN SDG 12.3 targets.
+            A research platform tracking how UK and EU companies publicly report
+            food waste data. Exploring corporate transparency in line with UN
+            SDG 12.3 targets.
           </p>
 
           <div className={styles.heroButtons}>
@@ -77,12 +77,12 @@ export default function Hero() {
           <div className={styles.heroStats}>
             <div className={styles.statItem}>
               <h3 className={styles.statNumber}>{eucom}</h3>
-              <p className={styles.statLabel}>EU supermarkets</p>
+              <p className={styles.statLabel}>EU companies</p>
             </div>
             <div className={styles.statDivider}></div>
             <div className={styles.statItem}>
               <h3 className={styles.statNumber}>{ukcom}</h3>
-              <p className={styles.statLabel}>UK supermarkets </p>
+              <p className={styles.statLabel}>UK companies </p>
             </div>
           </div>
         </div>

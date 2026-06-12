@@ -62,13 +62,13 @@ export default function EuCompanyData() {
               Company Targets
             </span>
             <h2 className={styles.title}>
-              EU Retailers&apos;{" "}
+              EU{" "}
               <span className={styles.highlight}>
                 Food Waste Reduction Targets
               </span>{" "}
             </h2>
             <p className={styles.subtitle}>
-              Comprehensive overview of major EU supermarkets&apos; commitments
+              Comprehensive overview of major EU food companies&apos; commitments
               to reducing food waste
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function EuCompanyData() {
               Company Targets
             </span>
             <h2 className={styles.title}>
-              EU Retailers&apos;{" "}
+              EU{" "}
               <span className={styles.highlight}>
                 Food Waste Reduction Targets
               </span>
@@ -118,13 +118,13 @@ export default function EuCompanyData() {
             Company Targets
           </span>
           <h2 className={styles.title}>
-            EU Retailers&apos;{" "}
+            EU{" "}
             <span className={styles.highlight}>
               Food Waste Reduction Targets
             </span>{" "}
           </h2>
           <p className={styles.subtitle}>
-            Comprehensive overview of major EU supermarkets&apos; commitments to
+            Comprehensive overview of major EU food companies&apos; commitments to
             reducing food waste
           </p>
         </div>
@@ -136,10 +136,7 @@ export default function EuCompanyData() {
             </span>
             <div className={styles.sectorToolbarText}>
               <span className={styles.sectorEyebrow}>Dataset</span>
-              <label
-                htmlFor="eu-target-sector"
-                className={styles.sectorPrompt}
-              >
+              <label htmlFor="eu-target-sector" className={styles.sectorPrompt}>
                 Choose a sector
               </label>
             </div>
@@ -206,8 +203,7 @@ export default function EuCompanyData() {
                     </td>
                     <td className={styles.dateCell}>
                       <div className={styles.milestonesWrapper}>
-                        {company.targetDate &&
-                        company.targetDate.length > 0 ? (
+                        {company.targetDate && company.targetDate.length > 0 ? (
                           <>
                             <div className={styles.milestoneContainer}>
                               {company.targetDate.map((year, idx) => (

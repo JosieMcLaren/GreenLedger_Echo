@@ -50,13 +50,13 @@ export default function CompanyTargets() {
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
             <h2 className={styles.title}>
-              UK Food Retailers'{" "}
+              UK{" "}
               <span className={styles.highlight}>
                 Food Waste Reduction Targets
               </span>
             </h2>
             <p className={styles.subtitle}>
-              Comprehensive overview of major UK supermarkets' commitments to
+              Comprehensive overview of major UK food companies' commitments to
               reducing food waste
             </p>
           </div>
@@ -73,7 +73,7 @@ export default function CompanyTargets() {
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
             <h2 className={styles.title}>
-              UK Retailers'{" "}
+              UK{" "}
               <span className={styles.highlight}>
                 Food Waste Reduction Targets
               </span>
@@ -104,13 +104,13 @@ export default function CompanyTargets() {
         <div className={styles.header}>
           <span className={styles.badge}>Company Targets</span>
           <h2 className={styles.title}>
-            UK Retailers'{" "}
+            UK{" "}
             <span className={styles.highlight}>
               Food Waste Reduction Targets
             </span>
           </h2>
           <p className={styles.subtitle}>
-            Comprehensive overview of major UK supermarkets' commitments to
+            Comprehensive overview of major UK food companies' commitments to
             reducing food waste
           </p>
         </div>
@@ -122,10 +122,7 @@ export default function CompanyTargets() {
             </span>
             <div className={styles.sectorToolbarText}>
               <span className={styles.sectorEyebrow}>Dataset</span>
-              <label
-                htmlFor="uk-target-sector"
-                className={styles.sectorPrompt}
-              >
+              <label htmlFor="uk-target-sector" className={styles.sectorPrompt}>
                 Choose a sector
               </label>
             </div>
@@ -160,7 +157,6 @@ export default function CompanyTargets() {
             <span className={styles.emptyStateAccent}>Nothing to display</span>
           </div>
         ) : (
-
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>
@@ -244,7 +240,9 @@ export default function CompanyTargets() {
                           </>
                         ) : (
                           <div className={styles.noDate}>
-                            <span className={styles.noDateText}>No Date Set</span>
+                            <span className={styles.noDateText}>
+                              No Date Set
+                            </span>
                           </div>
                         )}
                       </div>

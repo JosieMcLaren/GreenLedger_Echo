@@ -122,7 +122,7 @@ export default function FoodDonations() {
           </h2>
           <p className={styles.subtitle}>
             Tracking donated food to charity and community groups across UK
-            retailers
+            food companies
           </p>
         </div>
 

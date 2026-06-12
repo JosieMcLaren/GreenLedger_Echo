@@ -111,7 +111,7 @@ export default function DocumentsChart() {
             UK <span className={styles.highlight}>Documents by Year</span>
           </h2>
           <p className={styles.subtitle}>
-            Evolution of food waste reporting documentation across UK retailers
+            Evolution of food waste reporting documentation across UK food companies
           </p>
         </div>
 

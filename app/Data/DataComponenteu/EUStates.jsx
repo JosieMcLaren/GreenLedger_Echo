@@ -185,9 +185,9 @@ export default function UKStates() {
       <div className={styles.wrapper}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>UK Supermarket Food Waste Dashboard</h1>
+          <h1 className={styles.title}>EU Food Company Waste Dashboard</h1>
           <p className={styles.subtitle}>
-            Interactive analysis of food waste metrics across major UK retailers
+            Interactive analysis of food waste metrics across major EU food companies
           </p>
         </div>
 

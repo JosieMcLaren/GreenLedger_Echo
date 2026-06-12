@@ -23,7 +23,8 @@ export default function DataHero() {
           </h1>
           <p className={styles.description}>
             Comprehensive visualization of food waste reduction targets,
-            donations, and corporate commitments across major UK retailers from{" "}
+            donations, and corporate commitments across major UK food companies
+            from{" "}
             {}
             {minFrom} to {maxTo}.
           </p>
@@ -35,7 +36,7 @@ export default function DataHero() {
               </div>
               <div className={styles.statInfo}>
                 <div className={styles.statValue}>11</div>
-                <div className={styles.statLabel}>Food Retailers Tracked</div>
+                <div className={styles.statLabel}>Food Companies Tracked</div>
               </div>
             </div>
 
