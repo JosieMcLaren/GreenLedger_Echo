@@ -12,7 +12,7 @@ const ukCharitySchema = new mongoose.Schema(
   },
   {
     collection: "ukcharity",
-  }
+  },
 );
 module.exports =
   mongoose.models.ukCharity || mongoose.model("ukCharity", ukCharitySchema);

@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const ukdataSchema = new mongoose.Schema(
   {
+    sector: {
+      type: String,
+      default: "",
+    },
     name: {
       type: String,
       required: true,
@@ -15,7 +19,7 @@ const ukdataSchema = new mongoose.Schema(
   },
   {
     collection: "ukdata",
-  }
+  },
 );
 
 module.exports =

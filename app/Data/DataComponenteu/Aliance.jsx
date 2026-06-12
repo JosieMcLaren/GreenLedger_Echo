@@ -25,241 +25,6 @@ export default function Aliance() {
     fetchAlliances();
   }, []);
 
-  // const euAlliances = [
-  //   {
-  //     name: "AECOC (Spanish Association of Manufacturers and Distributors)",
-  //     link: "https://www.aecoc.es/",
-  //     companies: ["Mercadona"],
-  //   },
-  //   {
-  //     name: "Alwin",
-  //     companies: ["Norgesgruppen"],
-  //   },
-  //   {
-  //     name: "Banco Alimentare",
-  //     companies: ["Norgesgruppen"],
-  //   },
-  //   {
-  //     name: "British Retail Consortium",
-  //     companies: [
-  //       "ALDI",
-  //       "ASDA",
-  //       "CO-OP",
-  //       "Iceland",
-  //       "Lidl",
-  //       "M&S",
-  //       "Morrisons",
-  //       "Sainsbury",
-  //       "Tesco",
-  //       "Waitrose",
-  //     ],
-  //   },
-  //   {
-  //     name: "Caritas",
-  //     companies: ["Aldi Nord", "Carrefour", "DIA", "LIDL Schwarz Group"],
-  //   },
-  //   {
-  //     name: "Champions 12.3",
-  //     companies: ["Tesco"],
-  //   },
-  //   {
-  //     name: "Company Shop",
-  //     companies: ["Morrisons", "Tesco"],
-  //   },
-  //   {
-  //     name: "Consumer Goods Forum",
-  //     companies: ["Sainsbury", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "COP26",
-  //     companies: ["CO-OP", "M&S", "Sainsbury", "Tesco"],
-  //   },
-  //   {
-  //     name: "Council on Sust. Business",
-  //     companies: ["CO-OP"],
-  //   },
-  //   {
-  //     name: "Courtauld",
-  //     companies: [
-  //       "ALDI",
-  //       "ASDA",
-  //       "CO-OP",
-  //       "Iceland",
-  //       "Lidl",
-  //       "M&S",
-  //       "Morrisons",
-  //       "Sainsbury",
-  //       "Tesco",
-  //       "Waitrose",
-  //     ],
-  //   },
-  //   {
-  //     name: "Emmaüs",
-  //     companies: ["Les Mousquetaires"],
-  //   },
-  //   {
-  //     name: "Expliceat",
-  //     companies: ["Carrefour"],
-  //   },
-  //   {
-  //     name: "Fareshare",
-  //     companies: [
-  //       "ASDA",
-  //       "CO-OP",
-  //       "Morrisons",
-  //       "Sainsbury",
-  //       "Tesco",
-  //       "Waitrose",
-  //     ],
-  //   },
-  //   {
-  //     name: "Flashfood",
-  //     companies: ["Delhaize"],
-  //   },
-  //   {
-  //     name: "Food Cloud App",
-  //     companies: ["ALDI", "LIDL Ireland", "Lidl", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "Food for Soul",
-  //     companies: ["Carrefour"],
-  //   },
-  //   {
-  //     name: "His Church",
-  //     companies: [
-  //       "ALDI",
-  //       "ASDA",
-  //       "Iceland",
-  //       "Lidl",
-  //       "Morrisons",
-  //       "Sainsbury",
-  //       "Waitrose",
-  //     ],
-  //   },
-  //   {
-  //     name: "Hubbub",
-  //     companies: ["ASDA", "CO-OP", "Lidl", "M&S", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "Institute of Grocery Distribution",
-  //     companies: ["Morrisons", "Sainsbury"],
-  //   },
-  //   {
-  //     name: "Let's give them a chance",
-  //     companies: ["Les Mousquetaires"],
-  //   },
-  //   {
-  //     name: "Local NGOs (Food banks)",
-  //     companies: [
-  //       "Aldi Sud",
-  //       "Carrefour",
-  //       "Colruyt",
-  //       "DIA",
-  //       "Delhaize",
-  //       "Kesko",
-  //       "LIDL Ireland",
-  //       "LIDL Schwarz Group",
-  //       "Les Mousquetaires",
-  //       "Norgesgruppen",
-  //     ],
-  //   },
-  //   {
-  //     name: "Love Food Hate Waste",
-  //     companies: ["ALDI", "CO-OP", "Tesco"],
-  //   },
-  //   {
-  //     name: "Matsentralen",
-  //     companies: ["Norgesgruppen"],
-  //   },
-  //   {
-  //     name: "Neighbourly",
-  //     companies: ["ALDI", "Lidl", "M&S", "Sainsbury"],
-  //   },
-  //   {
-  //     name: "OLIO",
-  //     companies: ["ASDA", "Iceland", "Sainsbury", "Tesco"],
-  //   },
-  //   {
-  //     name: "Red Cross",
-  //     companies: ["Aldi Sud", "Carrefour", "Delhaize", "Les Mousquetaires"],
-  //   },
-  //   {
-  //     name: "Refood",
-  //     companies: ["Aldi Nord"],
-  //   },
-  //   {
-  //     name: "ResQ Club",
-  //     companies: ["Kesko"],
-  //   },
-  //   {
-  //     name: "Restos du Coeur",
-  //     companies: ["Les Mousquetaires"],
-  //   },
-  //   {
-  //     name: "Ringgaard association (Foreningen Ringgaard)",
-  //     companies: ["Aldi Nord"],
-  //   },
-  //   {
-  //     name: "Shrub Coop",
-  //     companies: ["Iceland"],
-  //   },
-  //   {
-  //     name: "Tafel",
-  //     companies: ["Aldi Nord", "LIDL Schwarz Group"],
-  //   },
-  //   {
-  //     name: "The Bread and Butter Thing",
-  //     companies: ["ASDA", "Iceland", "Lidl", "Morrisons"],
-  //   },
-  //   {
-  //     name: "The Trussell Trust",
-  //     companies: ["Morrisons", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "Throw No More",
-  //     companies: ["Norgesgruppen"],
-  //   },
-  //   {
-  //     name: "Too Good to go",
-  //     companies: ["ALDI", "ASDA", "M&S", "Morrisons", "Waitrose"],
-  //   },
-  //   {
-  //     name: "UN Climate Change Conference",
-  //     companies: ["Sainsbury"],
-  //   },
-  //   {
-  //     name: "Via Wings",
-  //     companies: ["LIDL Ireland"],
-  //   },
-  //   {
-  //     name: "WRAP",
-  //     companies: [
-  //       "ALDI",
-  //       "ASDA",
-  //       "CO-OP",
-  //       "Iceland",
-  //       "Lidl",
-  //       "M&S",
-  //       "Morrisons",
-  //       "Sainsbury",
-  //       "Tesco",
-  //       "Waitrose",
-  //     ],
-  //   },
-  //   {
-  //     name: "WWF",
-  //     companies: ["Carrefour", "Delhaize", "Kesko", "Les Mousquetaires"],
-  //   },
-  //   {
-  //     name: "'stop waste locally' (Stop Spild Lokalt)",
-  //     companies: ["Aldi Nord"],
-  //   },
-  //   {
-  //     name: "wwf",
-  //     companies: ["CO-OP", "M&S", "Tesco", "Waitrose"],
-  //   },
-  // ];
-
   // Get unique companies and their alliances
   const getCompaniesList = () => {
     const companiesMap = {};
@@ -284,8 +49,8 @@ export default function Aliance() {
     (alliance) =>
       alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alliance.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        company.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
   );
 
   // Filter companies based on search term
@@ -293,8 +58,8 @@ export default function Aliance() {
     (company) =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       company.alliances.some((alliance) =>
-        alliance.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        alliance.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
   );
 
   return (
@@ -307,7 +72,7 @@ export default function Aliance() {
           </h2>
           <p className={styles.subtitle}>
             Key non-profit organisations and charities working with our sample
-            of EU retailers to combat food waste
+            of EU food companies to combat food waste
           </p>
         </div>
 
@@ -464,7 +229,7 @@ export default function Aliance() {
         <div className={styles.disclaimer}>
           <p className={styles.disclaimerText}>
             <strong>Note:</strong> As reported by the retail companies in our
-            sample. Retailers may have other alliances.
+            sample. Food companies may have other alliances.
           </p>
         </div>
       </div>

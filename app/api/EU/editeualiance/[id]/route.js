@@ -44,6 +44,9 @@ export async function PATCH(request, context) {
         { status: 200 }
       );
     } else if (action === "delete-alliance") {
+      // if (!id) {
+      //   console.log("id needed to delte the contact details");
+      // }
       await eualiance.findByIdAndDelete(id);
       return NextResponse.json(
         { message: "Alliance deleted successfully." },

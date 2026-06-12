@@ -124,7 +124,9 @@ export default function EUDocumentsForm() {
     };
 
     try {
-      const url = editingId ? `/api/EU/editeudoc/${editingId}` : "/api/EU/eudoc";
+      const url = editingId
+        ? `/api/EU/editeudoc/${editingId}`
+        : "/api/EU/eudoc";
       const method = editingId ? "PATCH" : "POST";
 
       const response = await fetch(url, {
@@ -309,8 +311,8 @@ export default function EUDocumentsForm() {
                 ? "Updating..."
                 : "Submitting..."
               : editingId
-              ? "Update Document"
-              : "Submit Document"}
+                ? "Update Document"
+                : "Submit Document"}
           </button>
         </form>
       </div>
@@ -332,9 +334,7 @@ export default function EUDocumentsForm() {
             </div>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Integrated Reports</span>
-              <span className={styles.statValue}>
-                {totals.totalIntegrated}
-              </span>
+              <span className={styles.statValue}>{totals.totalIntegrated}</span>
             </div>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Other Documents</span>
@@ -416,4 +416,3 @@ export default function EUDocumentsForm() {
     </div>
   );
 }
-

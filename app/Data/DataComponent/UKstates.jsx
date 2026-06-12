@@ -22,7 +22,7 @@ export default function UKStates() {
   }, [fetchYearRange]);
   // State management
   const [selectedMetric, setSelectedMetric] = useState(
-    "foodWasteReductionRate"
+    "foodWasteReductionRate",
   );
   const [selectedCompanies, setSelectedCompanies] = useState([
     "Sainsbury",
@@ -127,7 +127,7 @@ export default function UKStates() {
         const companyData = Ukdata.find((c) => c.company === company);
         if (companyData) {
           const yearData = companyData.data.find(
-            (d) => d.from === from && d.to === to
+            (d) => d.from === from && d.to === to,
           );
           if (yearData) {
             let value = yearData[selectedMetric];
@@ -191,9 +191,9 @@ export default function UKStates() {
       <div className={styles.wrapper}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>UK Supermarket Food Waste Dashboard</h1>
+          <h1 className={styles.title}>UK Food Company Waste Dashboard</h1>
           <p className={styles.subtitle}>
-            Interactive analysis of food waste metrics across major UK retailers
+            Interactive analysis of food waste metrics across major UK food companies
           </p>
         </div>
 

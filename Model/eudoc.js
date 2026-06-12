@@ -22,6 +22,7 @@ const eudocSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
     other: {
       type: Number,
       default: 0,
@@ -29,6 +30,6 @@ const eudocSchema = new mongoose.Schema(
   },
   {
     collection: "eudocuments",
-  }
+  },
 );
 module.exports = mongoose.models.eudoc || mongoose.model("eudoc", eudocSchema);

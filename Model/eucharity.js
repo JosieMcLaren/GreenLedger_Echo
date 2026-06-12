@@ -13,7 +13,7 @@ const eucharitySchema = new mongoose.Schema(
   },
   {
     collection: "eucharity",
-  }
+  },
 );
 module.exports =
   mongoose.models.eucharity || mongoose.model("eucharity", eucharitySchema);

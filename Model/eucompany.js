@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const euCompanySchema = new mongoose.Schema({
+  sector: { type: String, default: "" },
   companyName: { type: String, required: true },
   Commitment: [String],
   targetDate: [Number],

@@ -7,7 +7,7 @@ export async function POST(request) {
   if (!from || !to) {
     return NextResponse.json(
       { message: "From and To years are required." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   try {
@@ -23,12 +23,12 @@ export async function POST(request) {
     await neweudata.save();
     return NextResponse.json(
       { message: "Data saved successfully." },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -39,15 +39,15 @@ export async function GET() {
     const data = await eudata.find({});
     const totalAnnual = data.reduce(
       (sum, doc) => sum + (doc.annualReport || 0),
-      0
+      0,
     );
     const totalSustainability = data.reduce(
       (sum, doc) => sum + (doc.sustainability || 0),
-      0
+      0,
     );
     const totalIntegrated = data.reduce(
       (sum, doc) => sum + (doc.integratedReport || 0),
-      0
+      0,
     );
     const totalOther = data.reduce((sum, doc) => sum + (doc.other || 0), 0);
 
@@ -65,12 +65,12 @@ export async function GET() {
           totalReports,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

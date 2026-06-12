@@ -103,7 +103,7 @@ export default function RedistributionStats() {
           </h2>
           <p className={styles.subtitle}>
             Tracking the percentage of unsold food safe for human consumption
-            that is successfully redistributed across major UK retailers
+            that is successfully redistributed across major UK food companies
           </p>
         </div>
 

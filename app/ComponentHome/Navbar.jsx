@@ -17,10 +17,12 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
-        <div className={styles.logo}>
-          <Image src={logo} alt="Waste Food Logo" width={50} height={50} />
-          <span className={styles.brandName}>Waste food report</span>
-        </div>
+        <a href="/">
+          <div className={styles.logo}>
+            <Image src={logo} alt="Waste Food Logo" width={50} height={50} />
+            <span className={styles.brandName}>Waste food report</span>
+          </div>
+        </a>
 
         <ul className={`${styles.navLinks} ${isMenuOpen ? styles.active : ""}`}>
           <li>

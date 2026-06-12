@@ -98,27 +98,27 @@ export default function Alliances() {
     (alliance) =>
       alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alliance.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        company.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
   );
 
   const filteredCharities = charities.filter(
     (charity) =>
       charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       charity.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        company.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
   );
 
   const filteredCompanies = companiesList.filter(
     (company) =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       company.alliances.some((alliance) =>
-        alliance.toLowerCase().includes(searchTerm.toLowerCase())
+        alliance.toLowerCase().includes(searchTerm.toLowerCase()),
       ) ||
       company.charities.some((charity) =>
-        charity.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        charity.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
   );
 
   return (
@@ -131,7 +131,7 @@ export default function Alliances() {
           </h2>
           <p className={styles.subtitle}>
             Key non-profit organisations and charities working with our sample
-            of UK retailers to combat food waste
+            of UK food companies to combat food waste
           </p>
         </div>
 
@@ -364,7 +364,7 @@ export default function Alliances() {
         <div className={styles.disclaimer}>
           <p className={styles.disclaimerText}>
             <strong>Note:</strong> As reported by the food retail companies in
-            our sample. Retailers may have other alliances and Charity Partners.
+            our sample. Food companies may have other alliances and charity partners.
           </p>
         </div>
       </div>

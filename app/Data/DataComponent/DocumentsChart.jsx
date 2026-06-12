@@ -18,6 +18,7 @@ export default function DocumentsChart() {
   const [documentsData, setDocumentsData] = useState([]);
   const [totalReports, setTotalReports] = useState(0);
   const [totalAnnual, setTotalAnnual] = useState(0);
+  const [totalESG, setTotalESG] = useState(0);
   const [totalSustainability, setTotalSustainability] = useState(0);
   const [totalOther, setTotalOther] = useState(0);
 
@@ -34,6 +35,7 @@ export default function DocumentsChart() {
         setTotalAnnual(data.totals.totalAnnual);
         setTotalSustainability(data.totals.totalSustainability);
         setTotalOther(data.totals.totalOther);
+        setTotalESG(data.totals.totalESG);
       } catch (error) {
         console.error("Error fetching UK documents data:", error);
       }
@@ -109,7 +111,7 @@ export default function DocumentsChart() {
             UK <span className={styles.highlight}>Documents by Year</span>
           </h2>
           <p className={styles.subtitle}>
-            Evolution of food waste reporting documentation across UK retailers
+            Evolution of food waste reporting documentation across UK food companies
           </p>
         </div>
 
@@ -162,6 +164,13 @@ export default function DocumentsChart() {
                   radius={[0, 0, 0, 0]}
                 />
                 <Bar
+                  dataKey="ESG"
+                  stackId="a"
+                  fill="#8b5cf6"
+                  name="ESG Reports"
+                  radius={[0, 0, 0, 0]}
+                />
+                <Bar
                   dataKey="other"
                   stackId="a"
                   fill="#f59e0b"
@@ -185,6 +194,10 @@ export default function DocumentsChart() {
           <div className={styles.statCard}>
             <div className={styles.statValue}>{totalSustainability}</div>
             <div className={styles.statLabel}>Sustainability Reports</div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statValue}>{totalESG}</div>
+            <div className={styles.statLabel}>ESG Reports</div>
           </div>
           <div className={styles.statCard}>
             <div className={styles.statValue}>{totalOther}</div>

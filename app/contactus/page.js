@@ -120,7 +120,7 @@ export default function ContactUsPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      placeholder="John Doe"
+                      placeholder="Joe Doe"
                       className={styles.input}
                     />
                   </div>
@@ -151,7 +151,7 @@ export default function ContactUsPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      placeholder="john@example.com"
+                      placeholder="Joe@example.com"
                       className={styles.input}
                     />
                   </div>
@@ -289,6 +289,17 @@ export default function ContactUsPage() {
                   </>
                 )}
               </button>
+
+              <p className={styles.privacyNotice}>
+                The information you provide will only be used to respond to your
+                enquiry. Your details will not be stored long-term, added to any
+                mailing lists, or used for any other purpose. For more
+                information, please see our{" "}
+                <a href="/privacy" className={styles.privacyLink}>
+                  Privacy Notice
+                </a>
+                .
+              </p>
             </form>
 
             <div className={styles.contactInfo}>

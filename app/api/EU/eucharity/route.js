@@ -7,7 +7,7 @@ export async function POST(request) {
   if (!name || !companies) {
     return NextResponse.json(
       { message: "Name and companies are required fields." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   try {
@@ -16,7 +16,7 @@ export async function POST(request) {
     if (existingCharity) {
       return NextResponse.json(
         { message: "Charity already exists." },
-        { status: 409 }
+        { status: 409 },
       );
     }
     const newCharity = new eucharity({
@@ -27,12 +27,12 @@ export async function POST(request) {
     await newCharity.save();
     return NextResponse.json(
       { message: "EU Charity data saved successfully." },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -45,7 +45,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

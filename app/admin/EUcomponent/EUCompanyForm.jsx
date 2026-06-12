@@ -2,11 +2,21 @@
 import { useState, useEffect } from "react";
 import styles from "./EUCompanyForm.module.css";
 
+const SECTOR_OPTIONS = [
+  { value: "", label: "Untagged" },
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
 export default function EUCompanyForm() {
   const [formData, setFormData] = useState({
     companyName: "",
     fromBaseline: "",
     toBaseline: "",
+    sector: "",
   });
   const [commitments, setCommitments] = useState([""]);
   const [targetDates, setTargetDates] = useState([""]);
@@ -118,33 +128,40 @@ export default function EUCompanyForm() {
     setEditingId(item._id);
     setFormData({
       companyName: item.companyName,
-      fromBaseline: item.fromBaseline !== null && item.fromBaseline !== undefined ? item.fromBaseline : "",
-      toBaseline: item.toBaseline !== null && item.toBaseline !== undefined ? item.toBaseline : "",
+      fromBaseline:
+        item.fromBaseline !== null && item.fromBaseline !== undefined
+          ? item.fromBaseline
+          : "",
+      toBaseline:
+        item.toBaseline !== null && item.toBaseline !== undefined
+          ? item.toBaseline
+          : "",
+      sector: item.sector || "",
     });
     setCommitments(
-      item.Commitment && item.Commitment.length > 0 ? item.Commitment : [""]
+      item.Commitment && item.Commitment.length > 0 ? item.Commitment : [""],
     );
     setTargetDates(
       item.targetDate && item.targetDate.length > 0
         ? item.targetDate.map(String)
-        : [""]
+        : [""],
     );
     setTargetMetrics(
       item.TargetMetric && item.TargetMetric.length > 0
         ? item.TargetMetric
-        : [""]
+        : [""],
     );
     setStandardised(
       item.Standardised && item.Standardised.length > 0
         ? item.Standardised
-        : [""]
+        : [""],
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ companyName: "", fromBaseline: "", toBaseline: "" });
+    setFormData({ companyName: "", fromBaseline: "", toBaseline: "", sector: "" });
     setCommitments([""]);
     setTargetDates([""]);
     setTargetMetrics([""]);
@@ -193,8 +210,11 @@ export default function EUCompanyForm() {
       targetDate: targetDates.filter((d) => d !== "").map((d) => Number(d)),
       TargetMetric: targetMetrics.filter((m) => m.trim() !== ""),
       Standardised: standardised.filter((s) => s.trim() !== ""),
-      fromBaseline: formData.fromBaseline !== "" ? Number(formData.fromBaseline) : null,
-      toBaseline: formData.toBaseline !== "" ? Number(formData.toBaseline) : null,
+      fromBaseline:
+        formData.fromBaseline !== "" ? Number(formData.fromBaseline) : null,
+      toBaseline:
+        formData.toBaseline !== "" ? Number(formData.toBaseline) : null,
+      sector: formData.sector,
     };
 
     try {
@@ -224,6 +244,7 @@ export default function EUCompanyForm() {
           companyName: "",
           fromBaseline: "",
           toBaseline: "",
+          sector: "",
         });
         setCommitments([""]);
         setTargetDates([""]);
@@ -290,6 +311,25 @@ export default function EUCompanyForm() {
             />
           </div>
 
+          <div className={styles.formGroup}>
+            <label htmlFor="sector" className={styles.label}>
+              Sector Tag
+            </label>
+            <select
+              id="sector"
+              name="sector"
+              value={formData.sector}
+              onChange={handleChange}
+              className={styles.input}
+            >
+              {SECTOR_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Commitments Section */}
           <div className={styles.arraySection}>
             <div className={styles.arraySectionHeader}>
@@ -345,7 +385,9 @@ export default function EUCompanyForm() {
                 <input
                   type="number"
                   value={date}
-                  onChange={(e) => handleTargetDateChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleTargetDateChange(index, e.target.value)
+                  }
                   className={styles.input}
                   placeholder="e.g., 2030"
                 />
@@ -482,8 +524,8 @@ export default function EUCompanyForm() {
                 ? "Updating..."
                 : "Submitting..."
               : editingId
-              ? "Update Data"
-              : "Submit Data"}
+                ? "Update Data"
+                : "Submit Data"}
           </button>
         </form>
       </div>
@@ -504,6 +546,7 @@ export default function EUCompanyForm() {
               <thead>
                 <tr>
                   <th>Company Name</th>
+                  <th>Sector</th>
                   <th>Commitments</th>
                   <th>Target Dates</th>
                   <th>Target Metrics</th>
@@ -516,6 +559,7 @@ export default function EUCompanyForm() {
                 {existingData.map((item) => (
                   <tr key={item._id}>
                     <td className={styles.companyName}>{item.companyName}</td>
+                    <td>{item.sector || "Untagged"}</td>
                     <td>
                       {item.Commitment && item.Commitment.length > 0 ? (
                         <ul className={styles.arrayList}>
@@ -564,12 +608,13 @@ export default function EUCompanyForm() {
                       {item.fromBaseline === 0 && item.toBaseline === 0
                         ? "N/A"
                         : item.fromBaseline !== null && item.toBaseline !== null
-                        ? `${item.fromBaseline}/${item.toBaseline}`
-                        : item.fromBaseline !== null || item.toBaseline !== null
-                        ? item.fromBaseline !== null
-                          ? item.fromBaseline
-                          : item.toBaseline
-                        : "N/A"}
+                          ? `${item.fromBaseline}/${item.toBaseline}`
+                          : item.fromBaseline !== null ||
+                              item.toBaseline !== null
+                            ? item.fromBaseline !== null
+                              ? item.fromBaseline
+                              : item.toBaseline
+                            : "N/A"}
                     </td>
                     <td>
                       <div className={styles.actionButtons}>
@@ -597,4 +642,3 @@ export default function EUCompanyForm() {
     </div>
   );
 }
-

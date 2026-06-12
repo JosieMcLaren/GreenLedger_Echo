@@ -182,7 +182,7 @@ export default function UKAlliancesForm() {
             action: "add-company",
             company: newCompanyName.trim(),
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -269,7 +269,7 @@ export default function UKAlliancesForm() {
             action: "update-url",
             Url: editUrlValue,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -537,7 +537,7 @@ export default function UKAlliancesForm() {
                           setExpandedAlliance(
                             expandedAlliance === alliance._id
                               ? null
-                              : alliance._id
+                              : alliance._id,
                           )
                         }
                         className={styles.expandButton}

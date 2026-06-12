@@ -11,13 +11,12 @@ export default function EuDataHero() {
         <div className={styles.content}>
           <span className={styles.badge}>European Union Data</span>
           <h1 className={styles.title}>
-            EU Sustainability{" "}
-            <span className={styles.highlight}>Data Hub</span>
+            EU Food Waste{" "}
+            <span className={styles.highlight}>Reduction Targets</span>
           </h1>
           <p className={styles.description}>
-            Explore comprehensive sustainability commitments and environmental
-            targets from leading European retailers across multiple countries,
-            driving collaborative action toward a greener future.
+            Comprehensive overview of major EU food companies' commitments to
+            reducing food waste
           </p>
 
           <div className={styles.statsGrid}>
@@ -66,4 +65,3 @@ export default function EuDataHero() {
     </section>
   );
 }
-
