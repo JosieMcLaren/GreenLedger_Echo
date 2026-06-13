@@ -120,7 +120,7 @@ export default function EuCompanyData() {
           <h2 className={styles.title}>
             EU{" "}
             <span className={styles.highlight}>
-              Food Waste Reduction Target
+              Food Waste Reduction Targets
             </span>{" "}
           </h2>
           <p className={styles.subtitle}>
