@@ -170,12 +170,10 @@ export default function UKStates() {
         });
         const ctx = canvas.getContext("2d");
 
-        // ✅ Apply a tint or color overlay to the image
         ctx.globalCompositeOperation = "source-atop";
         ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; // dark overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Download directly with high quality
         const link = document.createElement("a");
         link.download = "supermarket_chart.png";
         link.href = canvas.toDataURL("image/png", 1.0);
@@ -193,7 +191,8 @@ export default function UKStates() {
         <div className={styles.header}>
           <h1 className={styles.title}>UK Food Company Waste Dashboard</h1>
           <p className={styles.subtitle}>
-            Interactive analysis of food waste metrics across major UK food companies
+            Interactive analysis of food waste metrics across major UK food
+            companies
           </p>
         </div>
 
