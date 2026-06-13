@@ -236,8 +236,8 @@ export default function Charity() {
 
         <div className={styles.disclaimer}>
           <p className={styles.disclaimerText}>
-            <strong>Note:</strong> As reported by the retail companies in our
-            sample. Food companies may have other charities.
+            <strong>Note:</strong> As reported by the companies in our sample.
+            Food companies may have other charities.
           </p>
         </div>
       </div>
