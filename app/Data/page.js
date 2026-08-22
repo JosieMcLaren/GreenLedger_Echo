@@ -57,9 +57,10 @@ export default function Page() {
         style={{ display: activeRegion === "EU" ? "block" : "none" }}
       >
         <EuDataHero />
+        <EUStates/>
         <EuCompanyData />
         <DocumentEU />
-
+      
         <EuAliance />
         <EuCharity />
       </div>
