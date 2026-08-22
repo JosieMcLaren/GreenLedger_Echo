@@ -103,7 +103,7 @@ export default function DocumentsChart() {
   // ];
 
   return (
-    <section className={styles.charts}>
+    <section id="uk-documents" className={styles.charts}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Documentation Trends</span>

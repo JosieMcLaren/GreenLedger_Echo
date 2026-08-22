@@ -144,7 +144,7 @@ export default function UKStates() {
   const [chartVisible, setChartVisible] = useState(false);
 
   // Trigger chart animation on mount or when companies change
-  useState(() => {
+  useEffect(() => {
     if (selectedCompanies.length > 0) {
       setChartVisible(false);
       const timer = setTimeout(() => setChartVisible(true), 100);

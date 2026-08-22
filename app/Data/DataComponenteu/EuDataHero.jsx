@@ -6,7 +6,7 @@ import { IoStatsChart } from "react-icons/io5";
 
 export default function EuDataHero() {
   return (
-    <section className={styles.hero}>
+    <section id="eu-hero" className={styles.hero}>
       <div className={styles.container}>
         <div className={styles.content}>
           <span className={styles.badge}>European Union Data</span>

@@ -150,7 +150,7 @@ export default function UKStates() {
   const [chartVisible, setChartVisible] = useState(false);
 
   // Trigger chart animation on mount or when companies change
-  useState(() => {
+  useEffect(() => {
     if (selectedCompanies.length > 0) {
       setChartVisible(false);
       const timer = setTimeout(() => setChartVisible(true), 100);
@@ -185,7 +185,7 @@ export default function UKStates() {
   };
 
   return (
-    <div className={styles.container}>
+    <div id="uk-waste-dashboard" className={styles.container}>
       <div className={styles.wrapper}>
         {/* Header */}
         <div className={styles.header}>

@@ -45,7 +45,7 @@ export default function CompanyTargets() {
 
   if (loading) {
     return (
-      <section className={styles.targets}>
+      <section id="uk-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
@@ -68,7 +68,7 @@ export default function CompanyTargets() {
 
   if (error) {
     return (
-      <section className={styles.targets}>
+      <section id="uk-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
@@ -99,7 +99,7 @@ export default function CompanyTargets() {
   });
 
   return (
-    <section className={styles.targets}>
+    <section id="uk-company-targets" className={styles.targets}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Company Targets</span>

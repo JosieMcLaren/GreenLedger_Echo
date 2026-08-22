@@ -54,7 +54,7 @@ export default function EuCompanyData() {
 
   if (loading) {
     return (
-      <section className={styles.targets}>
+      <section id="eu-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>
@@ -80,7 +80,7 @@ export default function EuCompanyData() {
 
   if (fetchError) {
     return (
-      <section className={styles.targets}>
+      <section id="eu-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>
@@ -110,7 +110,7 @@ export default function EuCompanyData() {
   }
 
   return (
-    <section className={styles.targets}>
+    <section id="eu-company-targets" className={styles.targets}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>

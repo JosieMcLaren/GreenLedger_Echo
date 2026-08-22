@@ -44,7 +44,7 @@ export default function DocumentEU() {
   }, []);
 
   return (
-    <section className={styles.charts}>
+    <section id="eu-documents" className={styles.charts}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Documentation Trends</span>

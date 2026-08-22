@@ -122,7 +122,7 @@ export default function Alliances() {
   );
 
   return (
-    <section className={styles.alliances}>
+    <section id="uk-alliances" className={styles.alliances}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Partnerships</span>

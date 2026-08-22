@@ -61,7 +61,7 @@ export default function Charity() {
   );
 
   return (
-    <section className={styles.charities}>
+    <section id="eu-charity-partners" className={styles.charities}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Charitable Partnerships</span>

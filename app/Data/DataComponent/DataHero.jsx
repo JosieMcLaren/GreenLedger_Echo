@@ -13,7 +13,7 @@ export default function DataHero() {
   }, [fetchYearRange]);
 
   return (
-    <section className={styles.hero}>
+    <section id="uk-hero" className={styles.hero}>
       <div className={styles.container}>
         <div className={styles.content}>
           <span className={styles.badge}>Data & Analytics</span>
