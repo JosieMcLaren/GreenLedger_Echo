@@ -10,7 +10,7 @@ export default function Home() {
     <main style={{ minHeight: "100vh", overflowX: "hidden" }}>
       <Navbar />
       <Hero />
-      <Features />
+    
       <Impact />
       <CtaBanner />
       <Footer />
