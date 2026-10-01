@@ -25,6 +25,8 @@ import pageDataStyles from "./pageData.module.css";
 
 export default function Page() {
   const [activeRegion, setActiveRegion] = useState("UK");
+  const [ukSector, setUkSector] = useState("all");
+  const [euSector, setEuSector] = useState("all");
 
   const handleTabChange = (region) => {
     setActiveRegion(region);
@@ -45,10 +47,10 @@ export default function Page() {
         style={{ display: activeRegion === "UK" ? "block" : "none" }}
       >
         <DataHero />
-        <UKStates />
-        <CompanyTargets />
-        <DocumentsChart />
-        <Alliances />
+        <UKStates externalSector={ukSector} onSectorChange={setUkSector} />
+        <CompanyTargets externalSector={ukSector} onSectorChange={setUkSector} />
+        <DocumentsChart externalSector={ukSector} onSectorChange={setUkSector} />
+        <Alliances externalSector={ukSector} onSectorChange={setUkSector} />
       </div>
 
       {/* EU Data */}
@@ -57,12 +59,11 @@ export default function Page() {
         style={{ display: activeRegion === "EU" ? "block" : "none" }}
       >
         <EuDataHero />
-        <EUStates/>
-        <EuCompanyData />
-        <DocumentEU />
-      
-        <EuAliance />
-        <EuCharity />
+        <EUStates externalSector={euSector} onSectorChange={setEuSector} />
+        <EuCompanyData externalSector={euSector} onSectorChange={setEuSector} />
+        <DocumentEU externalSector={euSector} onSectorChange={setEuSector} />
+        <EuAliance externalSector={euSector} onSectorChange={setEuSector} />
+        <EuCharity externalSector={euSector} onSectorChange={setEuSector} />
       </div>
 
       <Footer />

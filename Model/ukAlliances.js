@@ -11,6 +11,10 @@ const ukAlliancesSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    sector: {
+      type: String,
+      default: "",
+    },
   },
   {
     collection: "ukalliances",

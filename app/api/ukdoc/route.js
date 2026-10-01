@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../lib/db.js";
 import ukdata from "../../../Model/ukdocument.js";
 export async function POST(request) {
-  const { from, to, annualReport, sustainability, ESG, other } =
+  const { from, to, annualReport, sustainability, ESG, other, sector } =
     await request.json();
   if (!from || !to) {
     return NextResponse.json(
@@ -20,6 +20,7 @@ export async function POST(request) {
       sustainability,
       ESG,
       other,
+      sector: sector || "",
     });
     await newUkdata.save();
     return NextResponse.json(

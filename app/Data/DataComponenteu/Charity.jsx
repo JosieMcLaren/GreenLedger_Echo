@@ -1,22 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./Charity.module.css";
 import { FaHeart, FaSearch } from "react-icons/fa";
 import { IoCheckmarkCircle } from "react-icons/io5";
 
-export default function Charity() {
+const PREDEFINED_SECTOR_OPTIONS = [
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
+const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match) return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
+export default function Charity({ externalSector, onSectorChange }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSector, setSelectedSector] = useState(externalSector || "all");
   const [viewMode, setViewMode] = useState("charities"); // "charities" or "companies"
   const [charityData, setCharityData] = useState([]);
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
+
+  const handleSectorChange = (sec) => {
+    setSelectedSector(sec);
+    if (onSectorChange) onSectorChange(sec);
+  };
 
   useEffect(() => {
     const fetchCharityData = async () => {
       try {
         const response = await fetch("/api/EU/eucharity");
         const result = await response.json();
-        setCharityData(result.data);
+        setCharityData(result.data || []);
       } catch (error) {
         console.error("Error fetching charity data:", error);
       }
@@ -24,10 +55,47 @@ export default function Charity() {
     fetchCharityData();
   }, []);
 
-  const getCompaniesList = () => {
+  // Compute available sectors
+  const availableSectors = useMemo(() => {
+    const set = new Set();
+    charityData.forEach((c) => {
+      if (c.sector && c.sector.trim()) set.add(c.sector.toLowerCase().trim());
+    });
+
+    const list = [];
+    PREDEFINED_SECTOR_OPTIONS.forEach((ps) => {
+      if (set.has(ps.value)) {
+        list.push(ps);
+        set.delete(ps.value);
+      }
+    });
+
+    set.forEach((sec) => {
+      list.push({
+        value: sec,
+        label: sec
+          .split(/[\s-_]+/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" "),
+      });
+    });
+
+    return list;
+  }, [charityData]);
+
+  // Sector filtering
+  const sectorFilteredCharities = useMemo(() => {
+    if (selectedSector === "all") return charityData;
+    return charityData.filter(
+      (c) => (c.sector || "").toLowerCase().trim() === selectedSector.toLowerCase().trim()
+    );
+  }, [charityData, selectedSector]);
+
+  // Unique companies from sector-filtered charities
+  const companiesList = useMemo(() => {
     const companiesMap = {};
-    charityData.forEach((charity) => {
-      charity.companies.forEach((company) => {
+    sectorFilteredCharities.forEach((charity) => {
+      charity.companies?.forEach((company) => {
         if (!companiesMap[company]) {
           companiesMap[company] = [];
         }
@@ -38,27 +106,29 @@ export default function Charity() {
       name: company,
       charities: charities,
     }));
-  };
-
-  const companiesList = getCompaniesList();
+  }, [sectorFilteredCharities]);
 
   // Filter charities based on search term
-  const filteredCharities = charityData.filter(
-    (charity) =>
-      charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      charity.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredCharities = useMemo(() => {
+    return sectorFilteredCharities.filter(
+      (charity) =>
+        charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        charity.companies?.some((company) =>
+          company.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [sectorFilteredCharities, searchTerm]);
 
   // Filter companies based on search term
-  const filteredCompanies = companiesList.filter(
-    (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.charities.some((charity) =>
-        charity.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredCompanies = useMemo(() => {
+    return companiesList.filter(
+      (company) =>
+        company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        company.charities.some((charity) =>
+          charity.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [companiesList, searchTerm]);
 
   return (
     <section id="eu-charity-partners" className={styles.charities}>
@@ -102,6 +172,39 @@ export default function Charity() {
           </button>
         </div>
 
+        {/* Sector Filter */}
+        <div className={styles.sectorFilterWrapper}>
+          <span className={styles.sectorFilterLabel}>Filter by Sector:</span>
+          <button
+            type="button"
+            onClick={() => handleSectorChange("all")}
+            className={`${styles.sectorPill} ${
+              selectedSector === "all" ? styles.sectorPillActive : ""
+            }`}
+          >
+            All Sectors
+            <span className={styles.sectorPillCount}>{charityData.length}</span>
+          </button>
+          {availableSectors.map((sector) => {
+            const count = charityData.filter(
+              (c) => (c.sector || "").toLowerCase().trim() === sector.value
+            ).length;
+            return (
+              <button
+                key={sector.value}
+                type="button"
+                onClick={() => handleSectorChange(sector.value)}
+                className={`${styles.sectorPill} ${
+                  selectedSector === sector.value ? styles.sectorPillActive : ""
+                }`}
+              >
+                {sector.label}
+                <span className={styles.sectorPillCount}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <FaHeart className={styles.sectionIcon} />
@@ -110,7 +213,7 @@ export default function Charity() {
             </h3>
             <div className={styles.totalCount}>
               {viewMode === "charities"
-                ? `${filteredCharities.length} of ${charityData.length} Charities`
+                ? `${filteredCharities.length} of ${sectorFilteredCharities.length} Charities`
                 : `${filteredCompanies.length} of ${companiesList.length} Companies`}
             </div>
           </div>
@@ -149,9 +252,16 @@ export default function Charity() {
               <div className={styles.charitiesList}>
                 {filteredCharities.map((charity, index) => (
                   <div key={index} className={styles.charityCard}>
-                    <h4 className={styles.charityName}>{charity.name}</h4>
+                    <h4 className={styles.charityName}>
+                      {charity.name}
+                      {charity.sector && (
+                        <span className={styles.sectorBadge}>
+                          {getSectorLabel(charity.sector)}
+                        </span>
+                      )}
+                    </h4>
                     <div className={styles.companiesList}>
-                      {charity.companies.map((company, idx) => (
+                      {charity.companies?.map((company, idx) => (
                         <span key={idx} className={styles.companyTag}>
                           <IoCheckmarkCircle className={styles.checkIcon} />
                           {company}
@@ -168,24 +278,24 @@ export default function Charity() {
                         Visit Charity →
                       </a>
                     )}
-                    {/* <div className={styles.companyCount}>
-                      {charity.companies.length}{" "}
-                      {charity.companies.length === 1 ? "Partner" : "Partners"}
-                    </div> */}
                   </div>
                 ))}
               </div>
             ) : (
               <div className={styles.emptyState}>
                 <p className={styles.emptyText}>
-                  No charities found matching "{searchTerm}"
+                  {searchTerm
+                    ? `No charities found matching "${searchTerm}"`
+                    : "No charities found for the selected sector."}
                 </p>
-                <button
-                  className={styles.resetBtn}
-                  onClick={() => setSearchTerm("")}
-                >
-                  Clear Search
-                </button>
+                {searchTerm && (
+                  <button
+                    className={styles.resetBtn}
+                    onClick={() => setSearchTerm("")}
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             )
           ) : // Company View
@@ -195,7 +305,7 @@ export default function Charity() {
                 <div key={index} className={styles.charityCard}>
                   <h4 className={styles.charityName}>{company.name}</h4>
                   <div className={styles.companiesList}>
-                    {company.charities.map((charity, idx) => (
+                    {company.charities?.map((charity, idx) => (
                       <span key={idx} className={styles.companyTag}>
                         <IoCheckmarkCircle className={styles.checkIcon} />
                         {charity}
@@ -212,28 +322,29 @@ export default function Charity() {
                       Visit Company →
                     </a>
                   )}
-                  {/* <div className={styles.companyCount}>
-                    {company.charities.length}{" "}
-                    {company.charities.length === 1 ? "Charity" : "Charities"}
-                  </div> */}
                 </div>
               ))}
             </div>
           ) : (
             <div className={styles.emptyState}>
               <p className={styles.emptyText}>
-                No companies found matching "{searchTerm}"
+                {searchTerm
+                  ? `No companies found matching "${searchTerm}"`
+                  : "No companies found for the selected sector."}
               </p>
-              <button
-                className={styles.resetBtn}
-                onClick={() => setSearchTerm("")}
-              >
-                Clear Search
-              </button>
+              {searchTerm && (
+                <button
+                  className={styles.resetBtn}
+                  onClick={() => setSearchTerm("")}
+                >
+                  Clear Search
+                </button>
+              )}
             </div>
           )}
         </div>
 
+        {/* Disclaimer */}
         <div className={styles.disclaimer}>
           <p className={styles.disclaimerText}>
             <strong>Note:</strong> As reported by the companies in our sample.

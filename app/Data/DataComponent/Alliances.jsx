@@ -1,23 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./Alliances.module.css";
 import { FaHandshake, FaHeart, FaSearch } from "react-icons/fa";
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { useEffect } from "react";
 
-export default function Alliances() {
+const PREDEFINED_SECTOR_OPTIONS = [
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
+const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match) return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
+export default function Alliances({ externalSector, onSectorChange }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSector, setSelectedSector] = useState(externalSector || "all");
   const [viewMode, setViewMode] = useState("alliances"); // "alliances" or "companies"
   const [ukAlliances, setukAlliances] = useState([]);
   const [charities, setCharities] = useState([]);
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
+
+  const handleSectorChange = (sec) => {
+    setSelectedSector(sec);
+    if (onSectorChange) onSectorChange(sec);
+  };
 
   useEffect(() => {
     const fetchAlliances = async () => {
       try {
         const response = await fetch("/api/ukalliances");
         const result = await response.json();
-        setukAlliances(result.data);
+        setukAlliances(result.data || []);
       } catch (error) {
         console.error("Error fetching alliances:", error);
       }
@@ -30,7 +61,7 @@ export default function Alliances() {
       try {
         const response = await fetch("/api/getUkcharity");
         const result = await response.json();
-        setCharities(result.data);
+        setCharities(result.data || []);
       } catch (error) {
         console.error("Error fetching charities:", error);
       }
@@ -38,46 +69,65 @@ export default function Alliances() {
     fetchCharities();
   }, []);
 
-  // const charities = [
-  //   {
-  //     name: "FareShare",
-  //     companies: ["Aldi", "Asda", "Co-op", "M&S", "Morrisons", "Sainsbury"],
-  //   },
-  //   {
-  //     name: "Hubbub",
-  //     companies: ["Asda", "Co-op", "M&S", "Morrisons", "Sainsbury", "Waitrose"],
-  //   },
-  //   {
-  //     name: "The Trussell Trust",
-  //     companies: ["Asda", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "OLIO",
-  //     companies: ["Asda", "Morrisons", "Tesco", "Waitrose"],
-  //   },
-  //   {
-  //     name: "Neighbourly",
-  //     companies: ["Aldi", "Asda", "Co-op", "Waitrose"],
-  //   },
-  //   {
-  //     name: "WWF",
-  //     companies: ["Co-op", "M&S", "Sainsbury", "Tesco"],
-  //   },
-  // ];
+  // Compute available sectors across alliances and charities
+  const availableSectors = useMemo(() => {
+    const set = new Set();
+    ukAlliances.forEach((a) => {
+      if (a.sector && a.sector.trim()) set.add(a.sector.toLowerCase().trim());
+    });
+    charities.forEach((c) => {
+      if (c.sector && c.sector.trim()) set.add(c.sector.toLowerCase().trim());
+    });
 
-  // Get unique companies and their alliances
-  const getCompaniesFromAlliances = () => {
+    const list = [];
+    PREDEFINED_SECTOR_OPTIONS.forEach((ps) => {
+      if (set.has(ps.value)) {
+        list.push(ps);
+        set.delete(ps.value);
+      }
+    });
+
+    set.forEach((sec) => {
+      list.push({
+        value: sec,
+        label: sec
+          .split(/[\s-_]+/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" "),
+      });
+    });
+
+    return list;
+  }, [ukAlliances, charities]);
+
+  // Sector filtering
+  const sectorFilteredAlliances = useMemo(() => {
+    if (selectedSector === "all") return ukAlliances;
+    return ukAlliances.filter(
+      (a) => (a.sector || "").toLowerCase().trim() === selectedSector.toLowerCase().trim()
+    );
+  }, [ukAlliances, selectedSector]);
+
+  const sectorFilteredCharities = useMemo(() => {
+    if (selectedSector === "all") return charities;
+    return charities.filter(
+      (c) => (c.sector || "").toLowerCase().trim() === selectedSector.toLowerCase().trim()
+    );
+  }, [charities, selectedSector]);
+
+  // Get unique companies from the sector-filtered alliances and charities
+  const companiesList = useMemo(() => {
     const companiesMap = {};
-    ukAlliances.forEach((alliance) => {
-      alliance.companies.forEach((company) => {
+    sectorFilteredAlliances.forEach((alliance) => {
+      alliance.companies?.forEach((company) => {
         if (!companiesMap[company]) {
           companiesMap[company] = { alliances: [], charities: [] };
         }
         companiesMap[company].alliances.push(alliance.name);
       });
     });
-    charities.forEach((charity) => {
-      charity.companies.forEach((company) => {
+    sectorFilteredCharities.forEach((charity) => {
+      charity.companies?.forEach((company) => {
         if (!companiesMap[company]) {
           companiesMap[company] = { alliances: [], charities: [] };
         }
@@ -89,37 +139,41 @@ export default function Alliances() {
       alliances: data.alliances,
       charities: data.charities,
     }));
-  };
-
-  const companiesList = getCompaniesFromAlliances();
+  }, [sectorFilteredAlliances, sectorFilteredCharities]);
 
   // Filter based on search term
-  const filteredAlliances = ukAlliances.filter(
-    (alliance) =>
-      alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alliance.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredAlliances = useMemo(() => {
+    return sectorFilteredAlliances.filter(
+      (alliance) =>
+        alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        alliance.companies?.some((company) =>
+          company.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [sectorFilteredAlliances, searchTerm]);
 
-  const filteredCharities = charities.filter(
-    (charity) =>
-      charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      charity.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredCharities = useMemo(() => {
+    return sectorFilteredCharities.filter(
+      (charity) =>
+        charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        charity.companies?.some((company) =>
+          company.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [sectorFilteredCharities, searchTerm]);
 
-  const filteredCompanies = companiesList.filter(
-    (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.alliances.some((alliance) =>
-        alliance.toLowerCase().includes(searchTerm.toLowerCase()),
-      ) ||
-      company.charities.some((charity) =>
-        charity.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredCompanies = useMemo(() => {
+    return companiesList.filter(
+      (company) =>
+        company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        company.alliances.some((alliance) =>
+          alliance.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        company.charities.some((charity) =>
+          charity.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [companiesList, searchTerm]);
 
   return (
     <section id="uk-alliances" className={styles.alliances}>
@@ -163,6 +217,45 @@ export default function Alliances() {
           </button>
         </div>
 
+        {/* Sector Filter */}
+        <div className={styles.sectorFilterWrapper}>
+          <span className={styles.sectorFilterLabel}>Filter by Sector:</span>
+          <button
+            type="button"
+            onClick={() => handleSectorChange("all")}
+            className={`${styles.sectorPill} ${
+              selectedSector === "all" ? styles.sectorPillActive : ""
+            }`}
+          >
+            All Sectors
+            <span className={styles.sectorPillCount}>
+              {ukAlliances.length + charities.length}
+            </span>
+          </button>
+          {availableSectors.map((sector) => {
+            const count =
+              ukAlliances.filter(
+                (a) => (a.sector || "").toLowerCase().trim() === sector.value
+              ).length +
+              charities.filter(
+                (c) => (c.sector || "").toLowerCase().trim() === sector.value
+              ).length;
+            return (
+              <button
+                key={sector.value}
+                type="button"
+                onClick={() => handleSectorChange(sector.value)}
+                className={`${styles.sectorPill} ${
+                  selectedSector === sector.value ? styles.sectorPillActive : ""
+                }`}
+              >
+                {sector.label}
+                <span className={styles.sectorPillCount}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Search Bar */}
         <div className={styles.searchWrapper}>
           <div className={styles.searchBox}>
@@ -198,7 +291,7 @@ export default function Alliances() {
                 <FaHandshake className={styles.sectionIcon} />
                 <h3 className={styles.sectionTitle}>UK Alliances</h3>
                 <div className={styles.totalCount}>
-                  {filteredAlliances.length} of {ukAlliances.length}
+                  {filteredAlliances.length} of {sectorFilteredAlliances.length}
                 </div>
               </div>
 
@@ -206,28 +299,31 @@ export default function Alliances() {
                 <div className={styles.alliancesList}>
                   {filteredAlliances.map((alliance, index) => (
                     <div key={index} className={styles.allianceCard}>
-                      <h4 className={styles.allianceName}>{alliance.name}</h4>
+                      <h4 className={styles.allianceName}>
+                        {alliance.name}
+                        {alliance.sector && (
+                          <span className={styles.sectorBadge}>
+                            {getSectorLabel(alliance.sector)}
+                          </span>
+                        )}
+                      </h4>
                       <div className={styles.companiesList}>
-                        {alliance.companies.map((company, idx) => (
+                        {alliance.companies?.map((company, idx) => (
                           <span key={idx} className={styles.companyTag}>
                             <IoCheckmarkCircle className={styles.checkIcon} />
                             {company}
                           </span>
                         ))}
                       </div>
-                      {/* <div className={styles.companyCount}>
-                        {alliance.companies.length}{" "}
-                        {alliance.companies.length === 1
-                          ? "Company"
-                          : "Companies"}
-                      </div> */}
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyText}>
-                    No alliances found matching "{searchTerm}"
+                    {searchTerm
+                      ? `No alliances found matching "${searchTerm}"`
+                      : "No alliances found for the selected sector."}
                   </p>
                 </div>
               )}
@@ -238,7 +334,7 @@ export default function Alliances() {
                 <FaHeart className={styles.sectionIcon} />
                 <h3 className={styles.sectionTitle}>Charity Partners</h3>
                 <div className={styles.totalCount}>
-                  {filteredCharities.length} of {charities.length}
+                  {filteredCharities.length} of {sectorFilteredCharities.length}
                 </div>
               </div>
 
@@ -246,28 +342,31 @@ export default function Alliances() {
                 <div className={styles.alliancesList}>
                   {filteredCharities.map((charity, index) => (
                     <div key={index} className={styles.allianceCard}>
-                      <h4 className={styles.allianceName}>{charity.name}</h4>
+                      <h4 className={styles.allianceName}>
+                        {charity.name}
+                        {charity.sector && (
+                          <span className={styles.sectorBadge}>
+                            {getSectorLabel(charity.sector)}
+                          </span>
+                        )}
+                      </h4>
                       <div className={styles.companiesList}>
-                        {charity.companies.map((company, idx) => (
+                        {charity.companies?.map((company, idx) => (
                           <span key={idx} className={styles.companyTag}>
                             <IoCheckmarkCircle className={styles.checkIcon} />
                             {company}
                           </span>
                         ))}
                       </div>
-                      {/* <div className={styles.companyCount}>
-                        {charity.companies.length}{" "}
-                        {charity.companies.length === 1
-                          ? "Partner"
-                          : "Partners"}
-                      </div> */}
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyText}>
-                    No charities found matching "{searchTerm}"
+                    {searchTerm
+                      ? `No charities found matching "${searchTerm}"`
+                      : "No charities found for the selected sector."}
                   </p>
                 </div>
               )}
@@ -311,7 +410,9 @@ export default function Alliances() {
               ) : (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyText}>
-                    No companies with alliances found matching "{searchTerm}"
+                    {searchTerm
+                      ? `No companies with alliances found matching "${searchTerm}"`
+                      : "No companies found for the selected sector."}
                   </p>
                 </div>
               )}
@@ -352,7 +453,9 @@ export default function Alliances() {
               ) : (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyText}>
-                    No companies with charities found matching "{searchTerm}"
+                    {searchTerm
+                      ? `No companies with charities found matching "${searchTerm}"`
+                      : "No companies found for the selected sector."}
                   </p>
                 </div>
               )}

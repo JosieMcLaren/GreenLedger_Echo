@@ -4,13 +4,15 @@ import eudata from "../../../../../Model/eudoc.js";
 
 export async function PATCH(request, context) {
   const { id } = await context.params;
-  const { from, to, annualReport, sustainability, integratedReport, other } =
+  const { from, to, annualReport, sustainability, integratedReport, other, sector } =
     await request.json();
   try {
     await connectToDatabase();
+    const updatePayload = { from, to, annualReport, sustainability, integratedReport, other };
+    if (sector !== undefined) updatePayload.sector = sector;
     const updatedData = await eudata.findByIdAndUpdate(
       id,
-      { from, to, annualReport, sustainability, integratedReport, other },
+      updatePayload,
       { new: true }
     );
     if (!updatedData) {

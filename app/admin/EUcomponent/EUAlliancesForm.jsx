@@ -2,11 +2,34 @@
 import { useState, useEffect } from "react";
 import styles from "./EUAlliancesForm.module.css";
 
+const PREDEFINED_SECTOR_OPTIONS = [
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+  { value: "", label: "Untagged" },
+];
+
+export const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "Untagged";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match && match.value !== "") return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
 export default function EUAlliancesForm() {
   const [formData, setFormData] = useState({
     name: "",
     link: "",
+    sector: "supermarkets",
   });
+  const [isCustomSector, setIsCustomSector] = useState(false);
   const [companies, setCompanies] = useState([""]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -18,6 +41,9 @@ export default function EUAlliancesForm() {
   const [newCompanyName, setNewCompanyName] = useState("");
   const [showEditLinkModal, setShowEditLinkModal] = useState(false);
   const [editLinkValue, setEditLinkValue] = useState("");
+  const [showEditSectorModal, setShowEditSectorModal] = useState(false);
+  const [editSectorValue, setEditSectorValue] = useState("");
+  const [editCustomSector, setEditCustomSector] = useState(false);
 
   // Fetch existing data
   useEffect(() => {
@@ -83,6 +109,7 @@ export default function EUAlliancesForm() {
       name: formData.name,
       companies: filteredCompanies,
       link: formData.link,
+      sector: formData.sector || "",
     };
 
     try {
@@ -101,7 +128,8 @@ export default function EUAlliancesForm() {
           text: "Alliance created successfully!",
           type: "success",
         });
-        setFormData({ name: "", link: "" });
+        setIsCustomSector(false);
+        setFormData({ name: "", link: "", sector: "supermarkets" });
         setCompanies([""]);
         fetchData();
       } else {
@@ -288,6 +316,63 @@ export default function EUAlliancesForm() {
     }
   };
 
+  const openEditSectorModal = (allianceId) => {
+    const alliance = existingData.find((a) => a._id === allianceId);
+    setSelectedAllianceId(allianceId);
+    const currentSector = alliance?.sector || "";
+    setEditSectorValue(currentSector);
+    const isStandard = PREDEFINED_SECTOR_OPTIONS.some(
+      (opt) => opt.value === currentSector.toLowerCase()
+    );
+    setEditCustomSector(!isStandard && currentSector !== "");
+    setShowEditSectorModal(true);
+  };
+
+  const closeEditSectorModal = () => {
+    setShowEditSectorModal(false);
+    setSelectedAllianceId(null);
+    setEditSectorValue("");
+    setEditCustomSector(false);
+  };
+
+  const handleUpdateSector = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `/api/EU/editeualiance/${selectedAllianceId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "update-sector",
+            sector: editSectorValue || "",
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ text: "Sector updated successfully!", type: "success" });
+        closeEditSectorModal();
+        fetchData();
+      } else {
+        setMessage({
+          text: data.message || "Failed to update sector",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setMessage({
+        text: "An error occurred. Please try again.",
+        type: "error",
+      });
+    }
+  };
+
   return (
     <>
       {/* Add Company Modal */}
@@ -332,6 +417,95 @@ export default function EUAlliancesForm() {
                 </button>
                 <button type="submit" className={styles.modalSubmitButton}>
                   Add Company
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Sector Modal */}
+      {showEditSectorModal && (
+        <div className={styles.modalOverlay} onClick={closeEditSectorModal}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Edit Sector</h3>
+              <button
+                onClick={closeEditSectorModal}
+                className={styles.modalCloseButton}
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleUpdateSector} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                  <label htmlFor="editSectorValue" className={styles.label} style={{ margin: 0 }}>
+                    Sector
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !editCustomSector;
+                      setEditCustomSector(next);
+                      if (!next && !PREDEFINED_SECTOR_OPTIONS.some((o) => o.value === (editSectorValue || "").toLowerCase())) {
+                        setEditSectorValue("supermarkets");
+                      }
+                    }}
+                    className={styles.toggleSectorModeBtn}
+                  >
+                    {editCustomSector ? "← Choose Predefined" : "+ Custom Sector"}
+                  </button>
+                </div>
+
+                {editCustomSector ? (
+                  <input
+                    type="text"
+                    id="editSectorValue"
+                    value={editSectorValue}
+                    onChange={(e) => setEditSectorValue(e.target.value)}
+                    className={styles.input}
+                    placeholder="e.g. Wholesalers, Food Service..."
+                    autoFocus
+                  />
+                ) : (
+                  <select
+                    id="editSectorValue"
+                    value={editSectorValue}
+                    onChange={(e) => {
+                      if (e.target.value === "__custom__") {
+                        setEditCustomSector(true);
+                        setEditSectorValue("");
+                      } else {
+                        setEditSectorValue(e.target.value);
+                      }
+                    }}
+                    className={styles.input}
+                  >
+                    <optgroup label="Predefined Sectors">
+                      {PREDEFINED_SECTOR_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <option value="__custom__">+ Enter Custom Sector...</option>
+                  </select>
+                )}
+              </div>
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  onClick={closeEditSectorModal}
+                  className={styles.modalCancelButton}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles.modalSubmitButton}>
+                  Update Sector
                 </button>
               </div>
             </form>
@@ -398,6 +572,96 @@ export default function EUAlliancesForm() {
           )}
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <label htmlFor="sector" className={styles.label} style={{ margin: 0 }}>
+                  Sector Tag
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextMode = !isCustomSector;
+                    setIsCustomSector(nextMode);
+                    if (!nextMode && !PREDEFINED_SECTOR_OPTIONS.some((o) => o.value === (formData.sector || "").toLowerCase())) {
+                      setFormData((prev) => ({ ...prev, sector: "supermarkets" }));
+                    }
+                  }}
+                  className={styles.toggleSectorModeBtn}
+                >
+                  {isCustomSector ? "← Choose Predefined" : "+ Enter Custom Sector"}
+                </button>
+              </div>
+
+              {isCustomSector ? (
+                <input
+                  type="text"
+                  id="sector"
+                  name="sector"
+                  value={formData.sector}
+                  onChange={handleChange}
+                  placeholder="e.g. Wholesalers, Food Service..."
+                  className={styles.input}
+                />
+              ) : (
+                <select
+                  id="sector"
+                  name="sector"
+                  value={formData.sector}
+                  onChange={(e) => {
+                    if (e.target.value === "__custom__") {
+                      setIsCustomSector(true);
+                      setFormData((prev) => ({ ...prev, sector: "" }));
+                    } else {
+                      handleChange(e);
+                    }
+                  }}
+                  className={styles.input}
+                >
+                  <optgroup label="Predefined Sectors">
+                    {PREDEFINED_SECTOR_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  {Array.from(
+                    new Set(
+                      existingData
+                        .map((item) => item.sector?.trim())
+                        .filter(
+                          (s) =>
+                            s &&
+                            !PREDEFINED_SECTOR_OPTIONS.some(
+                              (p) => p.value.toLowerCase() === s.toLowerCase()
+                            )
+                        )
+                    )
+                  ).length > 0 && (
+                    <optgroup label="Existing Custom Sectors">
+                      {Array.from(
+                        new Set(
+                          existingData
+                            .map((item) => item.sector?.trim())
+                            .filter(
+                              (s) =>
+                                s &&
+                                !PREDEFINED_SECTOR_OPTIONS.some(
+                                  (p) => p.value.toLowerCase() === s.toLowerCase()
+                                )
+                            )
+                        )
+                      ).map((sectorName) => (
+                        <option key={sectorName} value={sectorName}>
+                          {sectorName}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  <option value="__custom__">➕ Add Custom Sector...</option>
+                </select>
+              )}
+            </div>
+
             <div className={styles.formGroup}>
               <label htmlFor="name" className={styles.label}>
                 Alliance Name <span className={styles.required}>*</span>
@@ -493,6 +757,9 @@ export default function EUAlliancesForm() {
                   <div className={styles.allianceCardHeader}>
                     <div className={styles.allianceInfo}>
                       <h3 className={styles.allianceName}>{alliance.name}</h3>
+                      <span className={styles.sectorBadge}>
+                        {getSectorLabel(alliance.sector)}
+                      </span>
                       {alliance.link && (
                         <a
                           href={alliance.link}
@@ -508,6 +775,13 @@ export default function EUAlliancesForm() {
                       </span>
                     </div>
                     <div className={styles.actionButtons}>
+                      <button
+                        onClick={() => openEditSectorModal(alliance._id)}
+                        className={styles.editButton}
+                        title="Update Sector"
+                      >
+                        Edit Sector
+                      </button>
                       <button
                         onClick={() => openEditLinkModal(alliance._id)}
                         className={styles.editButton}

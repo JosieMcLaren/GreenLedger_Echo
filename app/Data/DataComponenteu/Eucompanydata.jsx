@@ -8,6 +8,7 @@ import { TbFilterFilled } from "react-icons/tb";
 import Loading from "../../components/Loading/Loading";
 
 const SECTOR_OPTIONS = [
+  { value: "all", label: "All Sectors" },
   { value: "supermarkets", label: "Supermarkets" },
   { value: "manufacturers", label: "Manufacturers" },
   { value: "distributors", label: "Distributors" },
@@ -15,11 +16,19 @@ const SECTOR_OPTIONS = [
   { value: "contract-caterers", label: "Contract Caterers" },
 ];
 
-export default function EuCompanyData() {
+export default function EuCompanyData({ externalSector, onSectorChange }) {
   const [eudata, setEudata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
-  const [selectedSector, setSelectedSector] = useState("supermarkets");
+  const [selectedSector, setSelectedSector] = useState(
+    externalSector || "supermarkets"
+  );
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,8 +57,9 @@ export default function EuCompanyData() {
   }, []);
 
   const filteredCompanies = eudata.filter((company) => {
+    if (selectedSector === "all") return true;
     const itemSector = company?.sector || "supermarkets";
-    return itemSector === selectedSector;
+    return itemSector.toLowerCase().trim() === selectedSector.toLowerCase().trim();
   });
 
   if (loading) {
@@ -127,6 +137,9 @@ export default function EuCompanyData() {
             Comprehensive overview of major EU food companies&apos; commitments
             to reducing food waste
           </p>
+          <p className={styles.disclaimerNote}>
+            Many EU companies disclose only limited information on food waste. Therefore, the data presented here may be incomplete.
+          </p>
         </div>
 
         <div className={styles.sectorToolbar}>
@@ -144,7 +157,11 @@ export default function EuCompanyData() {
               <select
                 id="eu-target-sector"
                 value={selectedSector}
-                onChange={(e) => setSelectedSector(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedSector(val);
+                  if (onSectorChange) onSectorChange(val);
+                }}
                 className={styles.sectorSelect}
                 aria-label="Filter EU company targets by sector"
               >

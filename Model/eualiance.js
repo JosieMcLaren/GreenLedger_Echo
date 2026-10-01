@@ -10,6 +10,10 @@ const eualianceschema = new mongoose.Schema(
       type: String,
     },
     companies: [String],
+    sector: {
+      type: String,
+      default: "",
+    },
   },
   {
     collection: "eualiance",

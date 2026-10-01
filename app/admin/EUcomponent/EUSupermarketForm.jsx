@@ -2,21 +2,34 @@
 import { useState, useEffect } from "react";
 import styles from "./EUSupermarketForm.module.css";
 
-const SECTOR_OPTIONS = [
-  { value: "", label: "Untagged" },
+const PREDEFINED_SECTOR_OPTIONS = [
   { value: "supermarkets", label: "Supermarkets" },
   { value: "manufacturers", label: "Manufacturers" },
   { value: "distributors", label: "Distributors" },
   { value: "restaurants", label: "Restaurants" },
   { value: "contract-caterers", label: "Contract Caterers" },
+  { value: "", label: "Untagged" },
 ];
+
+export const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "Untagged";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match && match.value !== "") return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
 
 export default function EUSupermarketForm() {
   const [formData, setFormData] = useState({
     company: "",
     color: "#3498db",
-    sector: "",
+    sector: "supermarkets",
   });
+  const [isCustomSector, setIsCustomSector] = useState(false);
   const [dataEntries, setDataEntries] = useState([
     {
       from: "",
@@ -104,10 +117,15 @@ export default function EUSupermarketForm() {
   const handleEditCompanyInfo = (company) => {
     setEditingCompanyId(company._id);
     setEditingCompanyInfo(true);
+    const compSector = company.sector || "";
+    const isPredefined = PREDEFINED_SECTOR_OPTIONS.some(
+      (opt) => opt.value === compSector.toLowerCase()
+    );
+    setIsCustomSector(!isPredefined && compSector !== "");
     setFormData({
       company: company.company,
       color: company.color,
-      sector: company.sector || "",
+      sector: compSector,
     });
     setDataEntries([
       {
@@ -132,7 +150,8 @@ export default function EUSupermarketForm() {
     setEditingCompanyInfo(false);
     setEditingYear(null);
     setAddingYearMode(false);
-    setFormData({ company: "", color: "#3498db", sector: "" });
+    setIsCustomSector(false);
+    setFormData({ company: "", color: "#3498db", sector: "supermarkets" });
     setDataEntries([
       {
         from: "",
@@ -455,7 +474,8 @@ export default function EUSupermarketForm() {
           text: "Company created successfully!",
           type: "success",
         });
-        setFormData({ company: "", color: "#3498db", sector: "" });
+        setIsCustomSector(false);
+        setFormData({ company: "", color: "#3498db", sector: "supermarkets" });
         setDataEntries([
           {
             from: "",
@@ -618,23 +638,96 @@ export default function EUSupermarketForm() {
                 </div>
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="sector" className={styles.label}>
-                  Sector Tag
-                </label>
-                <select
-                  id="sector"
-                  name="sector"
-                  value={formData.sector}
-                  onChange={handleChange}
-                  className={styles.input}
-                  disabled={editingYear || addingYearMode}
-                >
-                  {SECTOR_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                  <label htmlFor="sector" className={styles.label} style={{ margin: 0 }}>
+                    Sector Tag
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextMode = !isCustomSector;
+                      setIsCustomSector(nextMode);
+                      if (!nextMode && !PREDEFINED_SECTOR_OPTIONS.some((o) => o.value === (formData.sector || "").toLowerCase())) {
+                        setFormData((prev) => ({ ...prev, sector: "supermarkets" }));
+                      }
+                    }}
+                    className={styles.toggleSectorModeBtn}
+                    disabled={editingYear || addingYearMode}
+                  >
+                    {isCustomSector ? "← Choose Predefined" : "+ Enter Custom Sector"}
+                  </button>
+                </div>
+
+                {isCustomSector ? (
+                  <input
+                    type="text"
+                    id="sector"
+                    name="sector"
+                    value={formData.sector}
+                    onChange={handleChange}
+                    placeholder="e.g. Wholesalers, Food Service..."
+                    className={styles.input}
+                    disabled={editingYear || addingYearMode}
+                  />
+                ) : (
+                  <select
+                    id="sector"
+                    name="sector"
+                    value={formData.sector}
+                    onChange={(e) => {
+                      if (e.target.value === "__custom__") {
+                        setIsCustomSector(true);
+                        setFormData((prev) => ({ ...prev, sector: "" }));
+                      } else {
+                        handleChange(e);
+                      }
+                    }}
+                    className={styles.input}
+                    disabled={editingYear || addingYearMode}
+                  >
+                    <optgroup label="Predefined Sectors">
+                      {PREDEFINED_SECTOR_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                    {Array.from(
+                      new Set(
+                        existingData
+                          .map((item) => item.sector?.trim())
+                          .filter(
+                            (s) =>
+                              s &&
+                              !PREDEFINED_SECTOR_OPTIONS.some(
+                                (p) => p.value.toLowerCase() === s.toLowerCase()
+                              )
+                          )
+                      )
+                    ).length > 0 && (
+                      <optgroup label="Existing Custom Sectors">
+                        {Array.from(
+                          new Set(
+                            existingData
+                              .map((item) => item.sector?.trim())
+                              .filter(
+                                (s) =>
+                                  s &&
+                                  !PREDEFINED_SECTOR_OPTIONS.some(
+                                    (p) => p.value.toLowerCase() === s.toLowerCase()
+                                  )
+                              )
+                          )
+                        ).map((sectorName) => (
+                          <option key={sectorName} value={sectorName}>
+                            {sectorName}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                    <option value="__custom__">➕ Add Custom Sector...</option>
+                  </select>
+                )}
               </div>
             </div>
           </div>
@@ -930,6 +1023,9 @@ export default function EUSupermarketForm() {
                       style={{ backgroundColor: company.color }}
                     ></div>
                     <h3 className={styles.companyName}>{company.company}</h3>
+                    <span className={styles.sectorBadge}>
+                      {getSectorLabel(company.sector)}
+                    </span>
                     <span className={styles.dataCount}>
                       {company.data?.length || 0} year entries
                     </span>

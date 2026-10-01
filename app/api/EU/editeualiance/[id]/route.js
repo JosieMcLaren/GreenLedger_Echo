@@ -4,7 +4,7 @@ import eualiance from "../../../../../Model/eualiance.js";
 
 export async function PATCH(request, context) {
   const { id } = await context.params;
-  const { action, company, link } = await request.json();
+  const { action, company, link, sector } = await request.json();
 
   try {
     await connectToDatabase();
@@ -63,6 +63,13 @@ export async function PATCH(request, context) {
       await alliance.save();
       return NextResponse.json(
         { message: "Link updated successfully." },
+        { status: 200 }
+      );
+    } else if (action === "update-sector") {
+      alliance.sector = sector !== undefined ? sector : "";
+      await alliance.save();
+      return NextResponse.json(
+        { message: "Sector updated successfully." },
         { status: 200 }
       );
     } else {
