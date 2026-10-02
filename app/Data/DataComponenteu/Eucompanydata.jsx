@@ -21,7 +21,7 @@ export default function EuCompanyData({ externalSector, onSectorChange }) {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [selectedSector, setSelectedSector] = useState(
-    externalSector || "supermarkets"
+    externalSector || "all"
   );
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function EuCompanyData({ externalSector, onSectorChange }) {
       try {
         setLoading(true);
         setFetchError(null);
-        const response = await fetch("/api/EU/eucompany");
+        const response = await fetch("/api/EU/eucompany", { cache: "no-store" });
         const payload = await response.json();
         if (!response.ok) {
           throw new Error(payload?.message || "Failed to load EU companies.");
@@ -171,6 +171,10 @@ export default function EuCompanyData({ externalSector, onSectorChange }) {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className={styles.sectorCountBadge}>
+              {filteredCompanies.length}{" "}
+              {filteredCompanies.length === 1 ? "Company" : "Companies"}
             </div>
           </div>
         </div>

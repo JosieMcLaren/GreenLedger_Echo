@@ -640,3 +640,17 @@
     max-width: none;
   }
 }
+
+.sectorCountBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1rem;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1.5px solid #bbf7d0;
+  white-space: nowrap;
+}

@@ -4,12 +4,20 @@ import styles from "./DataHero.module.css";
 import { FaDatabase, FaChartBar, FaFileAlt } from "react-icons/fa";
 import { IoStatsChart } from "react-icons/io5";
 import { useYearRangeStore } from "../../store/yearRangeStore.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function DataHero() {
   const { minFrom, maxTo, fetchYearRange } = useYearRangeStore();
+  const [totalCompanies, setTotalCompanies] = useState(21);
+
   useEffect(() => {
     fetchYearRange();
+    fetch("/api/totalcomfig", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.ukcom) setTotalCompanies(data.ukcom);
+      })
+      .catch(() => {});
   }, [fetchYearRange]);
 
   return (
@@ -35,7 +43,7 @@ export default function DataHero() {
                 <FaDatabase />
               </div>
               <div className={styles.statInfo}>
-                <div className={styles.statValue}>11</div>
+                <div className={styles.statValue}>{totalCompanies}</div>
                 <div className={styles.statLabel}>Food Companies Tracked</div>
               </div>
             </div>

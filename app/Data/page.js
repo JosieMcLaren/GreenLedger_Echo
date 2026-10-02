@@ -42,29 +42,27 @@ export default function Page() {
       <DataSectionNav activeRegion={activeRegion} />
 
       {/* UK Data */}
-      <div
-        className={pageDataStyles.regionWrapper}
-        style={{ display: activeRegion === "UK" ? "block" : "none" }}
-      >
-        <DataHero />
-        <UKStates externalSector={ukSector} onSectorChange={setUkSector} />
-        <CompanyTargets externalSector={ukSector} onSectorChange={setUkSector} />
-        <DocumentsChart externalSector={ukSector} onSectorChange={setUkSector} />
-        <Alliances externalSector={ukSector} onSectorChange={setUkSector} />
-      </div>
+      {activeRegion === "UK" && (
+        <div className={pageDataStyles.regionWrapper}>
+          <DataHero />
+          <UKStates externalSector={ukSector} onSectorChange={setUkSector} />
+          <CompanyTargets externalSector={ukSector} onSectorChange={setUkSector} />
+          <DocumentsChart externalSector={ukSector} onSectorChange={setUkSector} />
+          <Alliances externalSector={ukSector} onSectorChange={setUkSector} />
+        </div>
+      )}
 
       {/* EU Data */}
-      <div
-        className={pageDataStyles.regionWrapper}
-        style={{ display: activeRegion === "EU" ? "block" : "none" }}
-      >
-        <EuDataHero />
-        <EUStates externalSector={euSector} onSectorChange={setEuSector} />
-        <EuCompanyData externalSector={euSector} onSectorChange={setEuSector} />
-        <DocumentEU externalSector={euSector} onSectorChange={setEuSector} />
-        <EuAliance externalSector={euSector} onSectorChange={setEuSector} />
-        <EuCharity externalSector={euSector} onSectorChange={setEuSector} />
-      </div>
+      {activeRegion === "EU" && (
+        <div className={pageDataStyles.regionWrapper}>
+          <EuDataHero externalSector={euSector} />
+          <EUStates externalSector={euSector} onSectorChange={setEuSector} />
+          <EuCompanyData externalSector={euSector} onSectorChange={setEuSector} />
+          <DocumentEU externalSector={euSector} onSectorChange={setEuSector} />
+          <EuAliance externalSector={euSector} onSectorChange={setEuSector} />
+          <EuCharity externalSector={euSector} onSectorChange={setEuSector} />
+        </div>
+      )}
 
       <Footer />
     </div>

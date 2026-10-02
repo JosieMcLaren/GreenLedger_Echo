@@ -21,7 +21,7 @@ export default function CompanyTargets({ externalSector, onSectorChange }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSector, setSelectedSector] = useState(
-    externalSector || "supermarkets"
+    externalSector || "all"
   );
 
   useEffect(() => {
@@ -36,6 +36,7 @@ export default function CompanyTargets({ externalSector, onSectorChange }) {
         setLoading(true);
         const res = await fetch("/api/getukdata", {
           method: "GET",
+          cache: "no-store",
         });
         // if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
@@ -155,6 +156,10 @@ export default function CompanyTargets({ externalSector, onSectorChange }) {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className={styles.sectorCountBadge}>
+              {filteredTargets.length}{" "}
+              {filteredTargets.length === 1 ? "Company" : "Companies"}
             </div>
           </div>
         </div>
