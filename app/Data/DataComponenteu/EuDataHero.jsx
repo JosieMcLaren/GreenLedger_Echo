@@ -94,6 +94,10 @@ export default function EuDataHero({ externalSector }) {
             Comprehensive overview of major EU food companies' commitments to
             reducing food waste
           </p>
+          <p className={styles.disclaimerNote}>
+            Many EU companies disclose only limited information on food waste.
+            Therefore, the data presented here may be incomplete.
+          </p>
 
           <div className={styles.statsGrid}>
             <div className={styles.statCard}>
