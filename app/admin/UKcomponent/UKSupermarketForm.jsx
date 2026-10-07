@@ -883,7 +883,7 @@ export default function UKSupermarketForm() {
 
                     <div className={styles.formGroup}>
                       <label className={styles.labelSmall}>
-                        Food Waste Per Handled
+                        Food Waste per Food Handled
                       </label>
                       <input
                         type="number"
