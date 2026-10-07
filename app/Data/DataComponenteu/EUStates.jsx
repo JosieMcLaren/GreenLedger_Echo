@@ -69,7 +69,7 @@ export default function EUStates({ externalSector, onSectorChange }) {
     { value: "foodWaste", label: "Food Waste (in Tonnes)" },
     {
       value: "foodWastePerHandled",
-      label: "Food Waste Per Handled (in %)",
+      label: "Food Waste per Food Handled (in %)",
     },
     {
       value: "unsoldFoodPerHandled",
@@ -298,6 +298,30 @@ export default function EUStates({ externalSector, onSectorChange }) {
   };
 
   const chartData = prepareChartData();
+
+  const displayYearsTracked = useMemo(() => {
+    let min = minFrom;
+    let max = maxTo;
+    if (!min || !max) {
+      Ukdata.forEach((company) => {
+        if (Array.isArray(company?.data)) {
+          company.data.forEach((entry) => {
+            const from = Number(entry?.from);
+            const to = Number(entry?.to);
+            if (!isNaN(from) && from > 0 && (!min || from < min)) min = from;
+            if (!isNaN(to) && to > 0 && (!max || to > max)) max = to;
+          });
+        }
+      });
+    }
+    if (min && max) {
+      return min === max ? `${min}` : `${min}-${max}`;
+    }
+    if (min || max) {
+      return `${min || max}`;
+    }
+    return "-";
+  }, [minFrom, maxTo, Ukdata]);
 
   // Animation state for chart entrance
   const [chartVisible, setChartVisible] = useState(false);
@@ -819,7 +843,7 @@ export default function EUStates({ externalSector, onSectorChange }) {
               <h3 className={styles.infoCardTitle}>Years Tracked</h3>
             </div>
             <p className={`${styles.infoCardValue} ${styles.valuePurple}`}>
-              {minFrom}-{maxTo}
+              {displayYearsTracked}
             </p>
           </div>
         </div>
