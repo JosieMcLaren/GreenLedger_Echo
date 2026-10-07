@@ -4,7 +4,7 @@ import { connectToDatabase } from "../../../lib/db.js";
 import ukalliances from "../../../Model/ukAlliances.js";
 
 export async function POST(request) {
-  const { name, companies, Url } = await request.json();
+  const { name, companies, Url, sector } = await request.json();
   if (!name || !companies) {
     return NextResponse.json(
       { message: "Name and companies are required fields." },
@@ -13,7 +13,7 @@ export async function POST(request) {
   }
   try {
     await connectToDatabase();
-    const existingAlliance = await ukalliances.findOne({ name });
+    const existingAlliance = await ukalliances.findOne({ name, sector: sector || "" });
     if (existingAlliance) {
       return NextResponse.json(
         { message: "Alliance already exists." },
@@ -24,6 +24,7 @@ export async function POST(request) {
       name,
       companies,
       Url,
+      sector: sector || "",
     });
     await newAlliance.save();
     return NextResponse.json(

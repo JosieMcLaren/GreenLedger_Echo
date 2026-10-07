@@ -96,8 +96,23 @@
   line-height: 1.8;
   color: #64748b;
   max-width: 800px;
-  margin: 0 auto 3rem;
+  margin: 0 auto 1.25rem;
   animation: slideUp 0.8s ease-out 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.disclaimerNote {
+  font-size: 0.95rem;
+  color: #4b5563;
+  font-style: italic;
+  max-width: 680px;
+  margin: 0 auto 2.5rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(59, 130, 246, 0.08);
+  border-left: 3px solid #3b82f6;
+  border-radius: 8px;
+  text-align: center;
+  animation: slideUp 0.8s ease-out 0.3s;
   animation-fill-mode: backwards;
 }
 

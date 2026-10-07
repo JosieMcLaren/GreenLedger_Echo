@@ -6,6 +6,7 @@ import Footer from "../ComponentHome/Footer";
 import DataHero from "./DataComponent/DataHero";
 import DataDisclaimer from "./DataComponent/DataDisclaimer";
 import DataTabs from "./DataComponent/DataTabs";
+import DataSectionNav from "./DataComponent/DataSectionNav";
 import CompanyTargets from "./DataComponent/CompanyTargets";
 import DocumentsChart from "./DataComponent/DocumentsChart";
 import RedistributionStats from "./DataComponent/RedistributionStats";
@@ -20,8 +21,12 @@ import EuAliance from "./DataComponenteu/Aliance";
 import EuCharity from "./DataComponenteu/Charity";
 import EUStates from "./DataComponenteu/EUStates";
 
+import pageDataStyles from "./pageData.module.css";
+
 export default function Page() {
   const [activeRegion, setActiveRegion] = useState("UK");
+  const [ukSector, setUkSector] = useState("all");
+  const [euSector, setEuSector] = useState("all");
 
   const handleTabChange = (region) => {
     setActiveRegion(region);
@@ -34,30 +39,29 @@ export default function Page() {
         <DataDisclaimer />
       </div>
       <DataTabs onTabChange={handleTabChange} />
+      <DataSectionNav activeRegion={activeRegion} />
 
       {/* UK Data */}
       {activeRegion === "UK" && (
-        <>
+        <div className={pageDataStyles.regionWrapper}>
           <DataHero />
-          <CompanyTargets />
-          <DocumentsChart />
-
-          <UKStates />
-
-          <Alliances />
-        </>
+          <UKStates externalSector={ukSector} onSectorChange={setUkSector} />
+          <CompanyTargets externalSector={ukSector} onSectorChange={setUkSector} />
+          <DocumentsChart externalSector={ukSector} onSectorChange={setUkSector} />
+          <Alliances externalSector={ukSector} onSectorChange={setUkSector} />
+        </div>
       )}
 
       {/* EU Data */}
       {activeRegion === "EU" && (
-        <>
-          <EuDataHero />
-          <EuCompanyData />
-          <DocumentEU />
-
-          <EuAliance />
-          <EuCharity />
-        </>
+        <div className={pageDataStyles.regionWrapper}>
+          <EuDataHero externalSector={euSector} />
+          <EUStates externalSector={euSector} onSectorChange={setEuSector} />
+          <EuCompanyData externalSector={euSector} onSectorChange={setEuSector} />
+          <DocumentEU externalSector={euSector} onSectorChange={setEuSector} />
+          <EuAliance externalSector={euSector} onSectorChange={setEuSector} />
+          <EuCharity externalSector={euSector} onSectorChange={setEuSector} />
+        </div>
       )}
 
       <Footer />

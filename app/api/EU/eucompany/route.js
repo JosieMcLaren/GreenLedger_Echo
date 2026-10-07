@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-
 import { connectToDatabase } from "../../../../lib/db.js";
-
 import eucompany from "../../../../Model/eucompany.js";
 
-
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function POST(request) {
 
@@ -94,35 +93,34 @@ console.log("Received POST data:", { companyName, Commitment, targetDate, Target
 
 
 
-export async function GET() {
+let eucompanyCache = null;
+let eucompanyCacheTime = 0;
+const CACHE_DURATION = 20000; // 20s in-memory cache
 
+export async function GET() {
   try {
+    const now = Date.now();
+    if (eucompanyCache && now - eucompanyCacheTime < CACHE_DURATION) {
+      return NextResponse.json(
+        { message: "Companies fetched successfully.", data: eucompanyCache },
+        { status: 200 },
+      );
+    }
 
     await connectToDatabase();
-
-    const companies = await eucompany.find().sort({ companyName: 1 });
-
-
+    const companies = await eucompany.find().sort({ companyName: 1 }).lean();
+    eucompanyCache = companies;
+    eucompanyCacheTime = now;
 
     return NextResponse.json(
-
       { message: "Companies fetched successfully.", data: companies },
-
       { status: 200 },
-
     );
-
   } catch (error) {
-
     return NextResponse.json(
-
       { message: "Internal Server Error" },
-
       { status: 500 },
-
     );
-
   }
-
 }
 

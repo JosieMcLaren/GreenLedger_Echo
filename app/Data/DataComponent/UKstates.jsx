@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   RadarChart,
   PolarGrid,
@@ -15,7 +15,39 @@ import html2canvas from "html2canvas";
 import styles from "./UKstates.module.css";
 import { useYearRangeStore } from "../../store/yearRangeStore.js";
 
-export default function UKStates() {
+const PREDEFINED_SECTOR_ORDER = [
+  "supermarkets",
+  "manufacturers",
+  "distributors",
+  "restaurants",
+  "contract-caterers",
+];
+
+const SECTOR_LABELS = {
+  supermarkets: "Supermarkets",
+  manufacturers: "Manufacturers",
+  distributors: "Distributors",
+  restaurants: "Restaurants",
+  "contract-caterers": "Contract Caterers",
+  untagged: "Untagged",
+};
+
+const formatSectorName = (sector) => {
+  if (!sector || !sector.trim()) return "Untagged";
+  const key = sector.toLowerCase().trim();
+  if (SECTOR_LABELS[key]) return SECTOR_LABELS[key];
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
+const getSectorKey = (sector) => {
+  if (!sector || !sector.trim()) return "untagged";
+  return sector.toLowerCase().trim();
+};
+
+export default function UKStates({ externalSector, onSectorChange }) {
   const { minFrom, maxTo, fetchYearRange } = useYearRangeStore();
   useEffect(() => {
     fetchYearRange();
@@ -77,14 +109,123 @@ export default function UKStates() {
     fetchdata();
   }, []);
 
-  // All companies
-  const companies = Ukdata.map((item) => item.company);
+  // Sorting and view controls
+  const [sortBy, setSortBy] = useState("sector"); // "sector" | "alphabetical"
+  const [activeSectorFilter, setActiveSectorFilter] = useState(
+    externalSector || "all"
+  );
+  const [groupBySector, setGroupBySector] = useState(true);
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setActiveSectorFilter(externalSector);
+    }
+  }, [externalSector]);
+
+  const handleSectorFilterChange = (sec) => {
+    setActiveSectorFilter(sec);
+    if (onSectorChange) onSectorChange(sec);
+  };
+
+  // Map company name to company record
+  const companyMap = useMemo(() => {
+    const map = {};
+    Ukdata.forEach((item) => {
+      map[item.company] = item;
+    });
+    return map;
+  }, [Ukdata]);
 
   // Helper function to get company color
   const getCompanyColor = (companyName) => {
-    const company = Ukdata.find((item) => item.company === companyName);
-    return company?.color || "#3b82f6"; // Default color if not found
+    return companyMap[companyName]?.color || "#3b82f6";
   };
+
+  // Helper function to get company sector
+  const getCompanySector = (companyName) => {
+    return companyMap[companyName]?.sector || "";
+  };
+
+  // All unique sectors present in loaded data with counts
+  const availableSectors = useMemo(() => {
+    const counts = {};
+    Ukdata.forEach((item) => {
+      const key = getSectorKey(item.sector);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+
+    const keys = Object.keys(counts).sort((a, b) => {
+      const idxA = PREDEFINED_SECTOR_ORDER.indexOf(a);
+      const idxB = PREDEFINED_SECTOR_ORDER.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      if (a === "untagged") return 1;
+      if (b === "untagged") return -1;
+      return a.localeCompare(b);
+    });
+
+    return keys.map((key) => ({
+      key,
+      label: formatSectorName(key),
+      count: counts[key],
+    }));
+  }, [Ukdata]);
+
+  // Companies sorted by sector (or A-Z) and filtered by active sector filter
+  const displayedCompanies = useMemo(() => {
+    let list = Ukdata.map((item) => item.company);
+
+    if (activeSectorFilter !== "all") {
+      list = list.filter((comp) => getSectorKey(companyMap[comp]?.sector) === activeSectorFilter);
+    }
+
+    return list.sort((a, b) => {
+      if (sortBy === "sector") {
+        const secA = getSectorKey(companyMap[a]?.sector);
+        const secB = getSectorKey(companyMap[b]?.sector);
+
+        if (secA !== secB) {
+          const idxA = PREDEFINED_SECTOR_ORDER.indexOf(secA);
+          const idxB = PREDEFINED_SECTOR_ORDER.indexOf(secB);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          if (secA === "untagged") return 1;
+          if (secB === "untagged") return -1;
+          return secA.localeCompare(secB);
+        }
+      }
+      return a.localeCompare(b);
+    });
+  }, [Ukdata, companyMap, activeSectorFilter, sortBy]);
+
+  // Companies grouped by sector for grouped display
+  const groupedCompanies = useMemo(() => {
+    const groups = {};
+    displayedCompanies.forEach((companyName) => {
+      const secKey = getSectorKey(companyMap[companyName]?.sector);
+      if (!groups[secKey]) {
+        groups[secKey] = {
+          key: secKey,
+          label: formatSectorName(secKey),
+          companies: [],
+        };
+      }
+      groups[secKey].companies.push(companyName);
+    });
+
+    return Object.values(groups).sort((a, b) => {
+      const idxA = PREDEFINED_SECTOR_ORDER.indexOf(a.key);
+      const idxB = PREDEFINED_SECTOR_ORDER.indexOf(b.key);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      if (a.key === "untagged") return 1;
+      if (b.key === "untagged") return -1;
+      return a.key.localeCompare(b.key);
+    });
+  }, [displayedCompanies, companyMap]);
 
   // Toggle company selection
   const toggleCompany = (company) => {
@@ -95,14 +236,25 @@ export default function UKStates() {
     }
   };
 
-  // Select all companies
+  // Select all companies in the current view
   const selectAllCompanies = () => {
-    setSelectedCompanies(companies);
+    const newSelected = Array.from(new Set([...selectedCompanies, ...displayedCompanies]));
+    setSelectedCompanies(newSelected);
   };
 
   // Clear all companies
   const clearAllCompanies = () => {
     setSelectedCompanies([]);
+  };
+
+  // Sector-level selection actions
+  const selectSectorCompanies = (sectorCompanies) => {
+    const newSelected = Array.from(new Set([...selectedCompanies, ...sectorCompanies]));
+    setSelectedCompanies(newSelected);
+  };
+
+  const deselectSectorCompanies = (sectorCompanies) => {
+    setSelectedCompanies(selectedCompanies.filter((c) => !sectorCompanies.includes(c)));
   };
 
   // Prepare data for radar chart
@@ -150,7 +302,7 @@ export default function UKStates() {
   const [chartVisible, setChartVisible] = useState(false);
 
   // Trigger chart animation on mount or when companies change
-  useState(() => {
+  useEffect(() => {
     if (selectedCompanies.length > 0) {
       setChartVisible(false);
       const timer = setTimeout(() => setChartVisible(true), 100);
@@ -185,7 +337,7 @@ export default function UKStates() {
   };
 
   return (
-    <div className={styles.container}>
+    <div id="uk-waste-dashboard" className={styles.container}>
       <div className={styles.wrapper}>
         {/* Header */}
         <div className={styles.header}>
@@ -248,43 +400,179 @@ export default function UKStates() {
             {/* Company Selector */}
             <div className={styles.companySelector}>
               <div className={styles.companySelectorHeader}>
-                <label className={styles.label}>Select Companies</label>
-                <div className={styles.bulkActions}>
+                <div>
+                  <label className={styles.label} style={{ marginBottom: "0.2rem" }}>
+                    Select Companies
+                  </label>
+                  <p style={{ fontSize: "0.78rem", color: "#6b7280", margin: 0 }}>
+                    {selectedCompanies.length} of {Ukdata.length} selected
+                  </p>
+                </div>
+
+                <div className={styles.selectorControlsRight}>
+                  {/* Sort Mode */}
+                  <div className={styles.sortGroup}>
+                    <span className={styles.sortLabel}>Sort:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className={styles.sortSelect}
+                      aria-label="Sort companies"
+                    >
+                      <option value="sector">By Sector</option>
+                      <option value="alphabetical">A to Z</option>
+                    </select>
+                  </div>
+
+                  {/* Group View Toggle */}
                   <button
-                    onClick={selectAllCompanies}
-                    className={styles.bulkButton}
                     type="button"
+                    onClick={() => setGroupBySector(!groupBySector)}
+                    className={`${styles.groupToggleBtn} ${groupBySector ? styles.groupToggleBtnActive : ""}`}
+                    title="Toggle grouping by sector"
                   >
-                    Select All
+                    <span>{groupBySector ? "✓ Grouped" : "Flat Grid"}</span>
                   </button>
-                  <button
-                    onClick={clearAllCompanies}
-                    className={styles.bulkButton}
-                    type="button"
-                  >
-                    Clear All
-                  </button>
+
+                  {/* Bulk Actions */}
+                  <div className={styles.bulkActions}>
+                    <button
+                      onClick={selectAllCompanies}
+                      className={styles.bulkButton}
+                      type="button"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      onClick={clearAllCompanies}
+                      className={styles.bulkButton}
+                      type="button"
+                    >
+                      Clear All
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className={styles.companyGrid}>
-                {companies.map((company) => (
-                  <label key={company} className={styles.companyLabel}>
-                    <input
-                      type="checkbox"
-                      checked={selectedCompanies.includes(company)}
-                      onChange={() => toggleCompany(company)}
-                      className={styles.checkbox}
-                    />
-                    <span className={styles.companyName}>
-                      <span
-                        className={styles.colorDot}
-                        style={{ backgroundColor: getCompanyColor(company) }}
-                      ></span>
-                      {company}
-                    </span>
-                  </label>
-                ))}
-              </div>
+
+              {/* Sector Filter Pills (if multiple sectors exist) */}
+              {availableSectors.length > 1 && (
+                <div className={styles.sectorPillsContainer}>
+                  <span className={styles.sectorPillLabel}>Filter:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSectorFilterChange("all")}
+                    className={`${styles.sectorPill} ${activeSectorFilter === "all" ? styles.sectorPillActive : ""}`}
+                  >
+                    All Sectors <span className={styles.sectorPillCount}>{Ukdata.length}</span>
+                  </button>
+                  {availableSectors.map((sector) => (
+                    <button
+                      key={sector.key}
+                      type="button"
+                      onClick={() => handleSectorFilterChange(activeSectorFilter === sector.key ? "all" : sector.key)}
+                      className={`${styles.sectorPill} ${activeSectorFilter === sector.key ? styles.sectorPillActive : ""}`}
+                    >
+                      {sector.label} <span className={styles.sectorPillCount}>{sector.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Company Checkboxes - Grouped or Flat */}
+              {groupBySector ? (
+                <div className={styles.groupedContainer}>
+                  {groupedCompanies.map((group) => (
+                    <div key={group.key} className={styles.sectorGroup}>
+                      <div className={styles.sectorGroupHeader}>
+                        <div className={styles.sectorGroupTitle}>
+                          <span>{group.label}</span>
+                          <span className={styles.sectorGroupCountBadge}>
+                            {group.companies.length} {group.companies.length === 1 ? "company" : "companies"}
+                          </span>
+                        </div>
+                        <div className={styles.sectorGroupActions}>
+                          <button
+                            type="button"
+                            onClick={() => selectSectorCompanies(group.companies)}
+                            className={styles.sectorGroupActionBtn}
+                          >
+                            Select All
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deselectSectorCompanies(group.companies)}
+                            className={styles.sectorGroupActionBtn}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={styles.companyGrid}>
+                        {group.companies.map((company) => {
+                          const isSelected = selectedCompanies.includes(company);
+                          return (
+                            <label
+                              key={company}
+                              className={`${styles.companyLabel} ${isSelected ? styles.companyLabelSelected : ""}`}
+                            >
+                              <div className={styles.companyContent}>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleCompany(company)}
+                                  className={styles.checkbox}
+                                />
+                                <span className={styles.companyName}>
+                                  <span
+                                    className={styles.colorDot}
+                                    style={{ backgroundColor: getCompanyColor(company) }}
+                                  ></span>
+                                  {company}
+                                </span>
+                              </div>
+                              <span className={styles.sectorBadge}>
+                                {formatSectorName(getCompanySector(company))}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.companyGrid}>
+                  {displayedCompanies.map((company) => {
+                    const isSelected = selectedCompanies.includes(company);
+                    return (
+                      <label
+                        key={company}
+                        className={`${styles.companyLabel} ${isSelected ? styles.companyLabelSelected : ""}`}
+                      >
+                        <div className={styles.companyContent}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleCompany(company)}
+                            className={styles.checkbox}
+                          />
+                          <span className={styles.companyName}>
+                            <span
+                              className={styles.colorDot}
+                              style={{ backgroundColor: getCompanyColor(company) }}
+                            ></span>
+                            {company}
+                          </span>
+                        </div>
+                        <span className={styles.sectorBadge}>
+                          {formatSectorName(getCompanySector(company))}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -477,7 +765,7 @@ export default function UKStates() {
               <h3 className={styles.infoCardTitle}>Total Companies</h3>
             </div>
             <p className={`${styles.infoCardValue} ${styles.valueBlue}`}>
-              {companies.length}
+              {Ukdata.length}
             </p>
           </div>
 

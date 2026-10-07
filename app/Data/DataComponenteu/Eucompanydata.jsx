@@ -8,6 +8,7 @@ import { TbFilterFilled } from "react-icons/tb";
 import Loading from "../../components/Loading/Loading";
 
 const SECTOR_OPTIONS = [
+  { value: "all", label: "All Sectors" },
   { value: "supermarkets", label: "Supermarkets" },
   { value: "manufacturers", label: "Manufacturers" },
   { value: "distributors", label: "Distributors" },
@@ -15,18 +16,26 @@ const SECTOR_OPTIONS = [
   { value: "contract-caterers", label: "Contract Caterers" },
 ];
 
-export default function EuCompanyData() {
+export default function EuCompanyData({ externalSector, onSectorChange }) {
   const [eudata, setEudata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
-  const [selectedSector, setSelectedSector] = useState("supermarkets");
+  const [selectedSector, setSelectedSector] = useState(
+    externalSector || "all"
+  );
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setFetchError(null);
-        const response = await fetch("/api/EU/eucompany");
+        const response = await fetch("/api/EU/eucompany", { cache: "no-store" });
         const payload = await response.json();
         if (!response.ok) {
           throw new Error(payload?.message || "Failed to load EU companies.");
@@ -48,13 +57,14 @@ export default function EuCompanyData() {
   }, []);
 
   const filteredCompanies = eudata.filter((company) => {
+    if (selectedSector === "all") return true;
     const itemSector = company?.sector || "supermarkets";
-    return itemSector === selectedSector;
+    return itemSector.toLowerCase().trim() === selectedSector.toLowerCase().trim();
   });
 
   if (loading) {
     return (
-      <section className={styles.targets}>
+      <section id="eu-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>
@@ -80,7 +90,7 @@ export default function EuCompanyData() {
 
   if (fetchError) {
     return (
-      <section className={styles.targets}>
+      <section id="eu-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>
@@ -110,7 +120,7 @@ export default function EuCompanyData() {
   }
 
   return (
-    <section className={styles.targets}>
+    <section id="eu-company-targets" className={styles.targets}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>
@@ -144,7 +154,11 @@ export default function EuCompanyData() {
               <select
                 id="eu-target-sector"
                 value={selectedSector}
-                onChange={(e) => setSelectedSector(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedSector(val);
+                  if (onSectorChange) onSectorChange(val);
+                }}
                 className={styles.sectorSelect}
                 aria-label="Filter EU company targets by sector"
               >
@@ -154,6 +168,10 @@ export default function EuCompanyData() {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className={styles.sectorCountBadge}>
+              {filteredCompanies.length}{" "}
+              {filteredCompanies.length === 1 ? "Company" : "Companies"}
             </div>
           </div>
         </div>

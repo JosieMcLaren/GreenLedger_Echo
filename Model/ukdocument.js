@@ -26,6 +26,10 @@ const ukdocumentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    sector: {
+      type: String,
+      default: "",
+    },
   },
 
   {

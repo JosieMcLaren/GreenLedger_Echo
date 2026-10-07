@@ -10,6 +10,10 @@ const eucharitySchema = new mongoose.Schema(
     Url: {
       type: String,
     },
+    sector: {
+      type: String,
+      default: "",
+    },
   },
   {
     collection: "eucharity",

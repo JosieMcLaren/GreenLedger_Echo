@@ -9,6 +9,10 @@ const ukCharitySchema = new mongoose.Schema(
     Url: {
       type: String,
     },
+    sector: {
+      type: String,
+      default: "",
+    },
   },
   {
     collection: "ukcharity",

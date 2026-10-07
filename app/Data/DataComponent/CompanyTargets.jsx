@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/Loading/Loading";
 
 const SECTOR_OPTIONS = [
+  { value: "all", label: "All Sectors" },
   { value: "supermarkets", label: "Supermarkets" },
   { value: "manufacturers", label: "Manufacturers" },
   { value: "distributors", label: "Distributors" },
@@ -15,11 +16,19 @@ const SECTOR_OPTIONS = [
   { value: "contract-caterers", label: "Contract Caterers" },
 ];
 
-export default function CompanyTargets() {
+export default function CompanyTargets({ externalSector, onSectorChange }) {
   const [targets, settargets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSector, setSelectedSector] = useState("supermarkets");
+  const [selectedSector, setSelectedSector] = useState(
+    externalSector || "all"
+  );
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
 
   useEffect(() => {
     const fetchUkData = async () => {
@@ -27,6 +36,7 @@ export default function CompanyTargets() {
         setLoading(true);
         const res = await fetch("/api/getukdata", {
           method: "GET",
+          cache: "no-store",
         });
         // if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
@@ -45,7 +55,7 @@ export default function CompanyTargets() {
 
   if (loading) {
     return (
-      <section className={styles.targets}>
+      <section id="uk-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
@@ -68,7 +78,7 @@ export default function CompanyTargets() {
 
   if (error) {
     return (
-      <section className={styles.targets}>
+      <section id="uk-company-targets" className={styles.targets}>
         <div className={styles.container}>
           <div className={styles.header}>
             <span className={styles.badge}>Company Targets</span>
@@ -94,12 +104,18 @@ export default function CompanyTargets() {
   }
 
   const filteredTargets = targets.filter((item) => {
+    if (selectedSector === "all") return true;
     const itemSector = item?.sector || "supermarkets";
-    return itemSector === selectedSector;
+    return itemSector.toLowerCase().trim() === selectedSector.toLowerCase().trim();
   });
 
+  const handleSectorChange = (newSector) => {
+    setSelectedSector(newSector);
+    if (onSectorChange) onSectorChange(newSector);
+  };
+
   return (
-    <section className={styles.targets}>
+    <section id="uk-company-targets" className={styles.targets}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Company Targets</span>
@@ -130,7 +146,7 @@ export default function CompanyTargets() {
               <select
                 id="uk-target-sector"
                 value={selectedSector}
-                onChange={(e) => setSelectedSector(e.target.value)}
+                onChange={(e) => handleSectorChange(e.target.value)}
                 className={styles.sectorSelect}
                 aria-label="Filter company targets by sector"
               >
@@ -140,6 +156,10 @@ export default function CompanyTargets() {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className={styles.sectorCountBadge}>
+              {filteredTargets.length}{" "}
+              {filteredTargets.length === 1 ? "Company" : "Companies"}
             </div>
           </div>
         </div>

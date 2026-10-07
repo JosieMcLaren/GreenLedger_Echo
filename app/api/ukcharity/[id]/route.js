@@ -4,7 +4,7 @@ import ukcharity from "../../../../Model/ukCharity.js";
 
 export async function PATCH(request, context) {
   const { id } = await context.params;
-  const { action, company, Url } = await request.json();
+  const { action, company, Url, sector } = await request.json();
   if (!id) {
     return NextResponse.json(
       { message: "Charity ID is required." },
@@ -72,6 +72,13 @@ export async function PATCH(request, context) {
       await alliance.save();
       return NextResponse.json(
         { message: "URL updated successfully." },
+        { status: 200 }
+      );
+    } else if (action === "update-sector") {
+      alliance.sector = sector !== undefined ? sector : "";
+      await alliance.save();
+      return NextResponse.json(
+        { message: "Sector updated successfully." },
         { status: 200 }
       );
     } else {

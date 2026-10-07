@@ -4,7 +4,7 @@ import { connectToDatabase } from "../../../lib/db.js";
 import ukcharity from "../../../Model/ukCharity.js";
 
 export async function POST(request) {
-  const { name, companies, Url } = await request.json();
+  const { name, companies, Url, sector } = await request.json();
   if (!name || !companies) {
     return NextResponse.json(
       { message: "Name and companies are required fields." },
@@ -13,7 +13,7 @@ export async function POST(request) {
   }
   try {
     await connectToDatabase();
-    const existingCharity = await ukcharity.findOne({ name });
+    const existingCharity = await ukcharity.findOne({ name, sector: sector || "" });
     if (existingCharity) {
       return NextResponse.json(
         { message: "Charity already exists." },
@@ -24,6 +24,7 @@ export async function POST(request) {
       name,
       companies,
       Url,
+      sector: sector || "",
     });
     await newCharity.save();
     return NextResponse.json(

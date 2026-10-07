@@ -4,13 +4,15 @@ import ukdata from "../../../../Model/ukdocument.js";
 
 export async function PATCH(request, context) {
   const { id } = await context.params;
-  const { from, to, annualReport, sustainability, ESG, other } =
+  const { from, to, annualReport, sustainability, ESG, other, sector } =
     await request.json();
   try {
     await connectToDatabase();
+    const updatePayload = { from, to, annualReport, sustainability, ESG, other };
+    if (sector !== undefined) updatePayload.sector = sector;
     const updatedData = await ukdata.findByIdAndUpdate(
       id,
-      { from, to, annualReport, sustainability, ESG, other },
+      updatePayload,
       { new: true },
     );
     if (!updatedData) {

@@ -2,6 +2,27 @@
 import { useState, useEffect } from "react";
 import styles from "./UKDocumentsForm.module.css";
 
+const PREDEFINED_SECTOR_OPTIONS = [
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+  { value: "", label: "Untagged" },
+];
+
+export const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "Untagged";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match && match.value !== "") return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
 export default function UKDocumentsForm() {
   const [formData, setFormData] = useState({
     from: "",
@@ -10,7 +31,9 @@ export default function UKDocumentsForm() {
     sustainability: "",
     ESG: "",
     other: "",
+    sector: "supermarkets",
   });
+  const [isCustomSector, setIsCustomSector] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [existingData, setExistingData] = useState([]);
@@ -49,6 +72,11 @@ export default function UKDocumentsForm() {
 
   const handleEdit = (item) => {
     setEditingId(item._id);
+    const itemSector = item.sector || "";
+    const isPredefined = PREDEFINED_SECTOR_OPTIONS.some(
+      (opt) => opt.value === itemSector.toLowerCase()
+    );
+    setIsCustomSector(!isPredefined && itemSector !== "");
     setFormData({
       from: item.from || "",
       to: item.to || "",
@@ -56,12 +84,14 @@ export default function UKDocumentsForm() {
       sustainability: item.sustainability || "",
       ESG: item.ESG || "",
       other: item.other || "",
+      sector: itemSector,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
+    setIsCustomSector(false);
     setFormData({
       from: "",
       to: "",
@@ -69,6 +99,7 @@ export default function UKDocumentsForm() {
       sustainability: "",
       ESG: "",
       other: "",
+      sector: "supermarkets",
     });
     setMessage({ text: "", type: "" });
   };
@@ -119,6 +150,7 @@ export default function UKDocumentsForm() {
         : undefined,
       ESG: formData.ESG ? Number(formData.ESG) : undefined,
       other: formData.other ? Number(formData.other) : undefined,
+      sector: formData.sector || "",
     };
 
     try {
@@ -142,6 +174,7 @@ export default function UKDocumentsForm() {
             : "Document submitted successfully!",
           type: "success",
         });
+        setIsCustomSector(false);
         setFormData({
           from: "",
           to: "",
@@ -149,6 +182,7 @@ export default function UKDocumentsForm() {
           sustainability: "",
           ESG: "",
           other: "",
+          sector: "supermarkets",
         });
         setEditingId(null);
         fetchData();
@@ -195,6 +229,96 @@ export default function UKDocumentsForm() {
         )}
 
         <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup} style={{ marginBottom: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+              <label htmlFor="sector" className={styles.label} style={{ margin: 0 }}>
+                Sector Tag
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextMode = !isCustomSector;
+                  setIsCustomSector(nextMode);
+                  if (!nextMode && !PREDEFINED_SECTOR_OPTIONS.some((o) => o.value === (formData.sector || "").toLowerCase())) {
+                    setFormData((prev) => ({ ...prev, sector: "supermarkets" }));
+                  }
+                }}
+                className={styles.toggleSectorModeBtn}
+              >
+                {isCustomSector ? "← Choose Predefined" : "+ Enter Custom Sector"}
+              </button>
+            </div>
+
+            {isCustomSector ? (
+              <input
+                type="text"
+                id="sector"
+                name="sector"
+                value={formData.sector}
+                onChange={handleChange}
+                placeholder="e.g. Wholesalers, Food Service..."
+                className={styles.input}
+              />
+            ) : (
+              <select
+                id="sector"
+                name="sector"
+                value={formData.sector}
+                onChange={(e) => {
+                  if (e.target.value === "__custom__") {
+                    setIsCustomSector(true);
+                    setFormData((prev) => ({ ...prev, sector: "" }));
+                  } else {
+                    handleChange(e);
+                  }
+                }}
+                className={styles.input}
+              >
+                <optgroup label="Predefined Sectors">
+                  {PREDEFINED_SECTOR_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+                {Array.from(
+                  new Set(
+                    existingData
+                      .map((item) => item.sector?.trim())
+                      .filter(
+                        (s) =>
+                          s &&
+                          !PREDEFINED_SECTOR_OPTIONS.some(
+                            (p) => p.value.toLowerCase() === s.toLowerCase()
+                          )
+                      )
+                  )
+                ).length > 0 && (
+                  <optgroup label="Existing Custom Sectors">
+                    {Array.from(
+                      new Set(
+                        existingData
+                          .map((item) => item.sector?.trim())
+                          .filter(
+                            (s) =>
+                              s &&
+                              !PREDEFINED_SECTOR_OPTIONS.some(
+                                (p) => p.value.toLowerCase() === s.toLowerCase()
+                              )
+                          )
+                      )
+                    ).map((sectorName) => (
+                      <option key={sectorName} value={sectorName}>
+                        {sectorName}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <option value="__custom__">➕ Add Custom Sector...</option>
+              </select>
+            )}
+          </div>
+
           <div className={styles.yearRow}>
             <div className={styles.formGroup}>
               <label htmlFor="from" className={styles.label}>
@@ -359,6 +483,7 @@ export default function UKDocumentsForm() {
               <thead>
                 <tr>
                   <th>Period</th>
+                  <th>Sector</th>
                   <th>Annual Report</th>
                   <th>Sustainability</th>
                   <th>ESG</th>
@@ -377,6 +502,11 @@ export default function UKDocumentsForm() {
                     <tr key={item._id}>
                       <td className={styles.periodCell}>
                         {item.from} - {item.to}
+                      </td>
+                      <td>
+                        <span className={styles.sectorBadge}>
+                          {getSectorLabel(item.sector)}
+                        </span>
                       </td>
                       <td>{item.annualReport || 0}</td>
                       <td>{item.sustainability || 0}</td>

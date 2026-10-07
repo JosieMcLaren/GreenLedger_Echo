@@ -1,23 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./Aliance.module.css";
 import { FaHandshake, FaSearch } from "react-icons/fa";
 import { IoCheckmarkCircle } from "react-icons/io5";
 
-export default function Aliance() {
+const PREDEFINED_SECTOR_OPTIONS = [
+  { value: "supermarkets", label: "Supermarkets" },
+  { value: "manufacturers", label: "Manufacturers" },
+  { value: "distributors", label: "Distributors" },
+  { value: "restaurants", label: "Restaurants" },
+  { value: "contract-caterers", label: "Contract Caterers" },
+];
+
+const getSectorLabel = (sector) => {
+  if (!sector || !sector.trim()) return "";
+  const match = PREDEFINED_SECTOR_OPTIONS.find(
+    (opt) => opt.value === sector.toLowerCase().trim()
+  );
+  if (match) return match.label;
+  return sector
+    .split(/[\s-_]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+};
+
+export default function Aliance({ externalSector, onSectorChange }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSector, setSelectedSector] = useState(externalSector || "all");
   const [viewMode, setViewMode] = useState("alliances");
   const [euAlliances, setAlliancesData] = useState([]);
+
+  useEffect(() => {
+    if (externalSector !== undefined) {
+      setSelectedSector(externalSector);
+    }
+  }, [externalSector]);
+
+  const handleSectorChange = (sec) => {
+    setSelectedSector(sec);
+    if (onSectorChange) onSectorChange(sec);
+  };
 
   useEffect(() => {
     const fetchAlliances = async () => {
       try {
         const response = await fetch("/api/EU/eualiance");
         const data = await response.json();
-        console.log("Fetched EU alliances data:", data);
-        setAlliancesData(data.data);
+        setAlliancesData(data.data || []);
       } catch (error) {
         console.error("Error fetching EU alliances data:", error);
       }
@@ -25,11 +55,47 @@ export default function Aliance() {
     fetchAlliances();
   }, []);
 
-  // Get unique companies and their alliances
-  const getCompaniesList = () => {
+  // Compute available sectors
+  const availableSectors = useMemo(() => {
+    const set = new Set();
+    euAlliances.forEach((a) => {
+      if (a.sector && a.sector.trim()) set.add(a.sector.toLowerCase().trim());
+    });
+
+    const list = [];
+    PREDEFINED_SECTOR_OPTIONS.forEach((ps) => {
+      if (set.has(ps.value)) {
+        list.push(ps);
+        set.delete(ps.value);
+      }
+    });
+
+    set.forEach((sec) => {
+      list.push({
+        value: sec,
+        label: sec
+          .split(/[\s-_]+/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" "),
+      });
+    });
+
+    return list;
+  }, [euAlliances]);
+
+  // Filter alliances by sector
+  const sectorFilteredAlliances = useMemo(() => {
+    if (selectedSector === "all") return euAlliances;
+    return euAlliances.filter(
+      (a) => (a.sector || "").toLowerCase().trim() === selectedSector.toLowerCase().trim()
+    );
+  }, [euAlliances, selectedSector]);
+
+  // Get unique companies from sector-filtered alliances
+  const companiesList = useMemo(() => {
     const companiesMap = {};
-    euAlliances.forEach((alliance) => {
-      alliance.companies.forEach((company) => {
+    sectorFilteredAlliances.forEach((alliance) => {
+      alliance.companies?.forEach((company) => {
         if (!companiesMap[company]) {
           companiesMap[company] = [];
         }
@@ -40,30 +106,32 @@ export default function Aliance() {
       name: company,
       alliances: alliances,
     }));
-  };
-
-  const companiesList = getCompaniesList();
+  }, [sectorFilteredAlliances]);
 
   // Filter alliances based on search term
-  const filteredAlliances = euAlliances.filter(
-    (alliance) =>
-      alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alliance.companies.some((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredAlliances = useMemo(() => {
+    return sectorFilteredAlliances.filter(
+      (alliance) =>
+        alliance.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        alliance.companies?.some((company) =>
+          company.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [sectorFilteredAlliances, searchTerm]);
 
   // Filter companies based on search term
-  const filteredCompanies = companiesList.filter(
-    (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.alliances.some((alliance) =>
-        alliance.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+  const filteredCompanies = useMemo(() => {
+    return companiesList.filter(
+      (company) =>
+        company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        company.alliances.some((alliance) =>
+          alliance.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [companiesList, searchTerm]);
 
   return (
-    <section className={styles.alliances}>
+    <section id="eu-alliances" className={styles.alliances}>
       <div className={styles.container}>
         <div className={styles.header}>
           <span className={styles.badge}>Partnerships</span>
@@ -104,6 +172,39 @@ export default function Aliance() {
           </button>
         </div>
 
+        {/* Sector Filter */}
+        <div className={styles.sectorFilterWrapper}>
+          <span className={styles.sectorFilterLabel}>Filter by Sector:</span>
+          <button
+            type="button"
+            onClick={() => handleSectorChange("all")}
+            className={`${styles.sectorPill} ${
+              selectedSector === "all" ? styles.sectorPillActive : ""
+            }`}
+          >
+            All Sectors
+            <span className={styles.sectorPillCount}>{euAlliances.length}</span>
+          </button>
+          {availableSectors.map((sector) => {
+            const count = euAlliances.filter(
+              (a) => (a.sector || "").toLowerCase().trim() === sector.value
+            ).length;
+            return (
+              <button
+                key={sector.value}
+                type="button"
+                onClick={() => handleSectorChange(sector.value)}
+                className={`${styles.sectorPill} ${
+                  selectedSector === sector.value ? styles.sectorPillActive : ""
+                }`}
+              >
+                {sector.label}
+                <span className={styles.sectorPillCount}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <FaHandshake className={styles.sectionIcon} />
@@ -112,7 +213,7 @@ export default function Aliance() {
             </h3>
             <div className={styles.totalCount}>
               {viewMode === "alliances"
-                ? `${filteredAlliances.length} of ${euAlliances.length} Organizations`
+                ? `${filteredAlliances.length} of ${sectorFilteredAlliances.length} Organizations`
                 : `${filteredCompanies.length} of ${companiesList.length} Companies`}
             </div>
           </div>
@@ -163,9 +264,16 @@ export default function Aliance() {
                         </a>
                       )}
                     </div>
-                    <h4 className={styles.allianceName}>{alliance.name}</h4>
+                    <h4 className={styles.allianceName}>
+                      {alliance.name}
+                      {alliance.sector && (
+                        <span className={styles.sectorBadge}>
+                          {getSectorLabel(alliance.sector)}
+                        </span>
+                      )}
+                    </h4>
                     <div className={styles.companiesList}>
-                      {alliance.companies.map((company, idx) => (
+                      {alliance.companies?.map((company, idx) => (
                         <span key={idx} className={styles.companyTag}>
                           <IoCheckmarkCircle className={styles.checkIcon} />
                           {company}
@@ -179,14 +287,18 @@ export default function Aliance() {
             ) : (
               <div className={styles.emptyState}>
                 <p className={styles.emptyText}>
-                  No alliances found matching "{searchTerm}"
+                  {searchTerm
+                    ? `No alliances found matching "${searchTerm}"`
+                    : "No alliances found for the selected sector."}
                 </p>
-                <button
-                  className={styles.resetBtn}
-                  onClick={() => setSearchTerm("")}
-                >
-                  Clear Search
-                </button>
+                {searchTerm && (
+                  <button
+                    className={styles.resetBtn}
+                    onClick={() => setSearchTerm("")}
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             )
           ) : // Company View
@@ -196,31 +308,31 @@ export default function Aliance() {
                 <div key={index} className={styles.allianceCard}>
                   <h4 className={styles.allianceName}>{company.name}</h4>
                   <div className={styles.companiesList}>
-                    {company.alliances.map((alliance, idx) => (
+                    {company.alliances?.map((alliance, idx) => (
                       <span key={idx} className={styles.companyTag}>
                         <IoCheckmarkCircle className={styles.checkIcon} />
                         {alliance}
                       </span>
                     ))}
                   </div>
-                  {/* <div className={styles.companyCount}>
-                    {company.alliances.length}{" "}
-                    {company.alliances.length === 1 ? "Alliance" : "Alliances"}
-                  </div> */}
                 </div>
               ))}
             </div>
           ) : (
             <div className={styles.emptyState}>
               <p className={styles.emptyText}>
-                No companies found matching "{searchTerm}"
+                {searchTerm
+                  ? `No companies found matching "${searchTerm}"`
+                  : "No companies found for the selected sector."}
               </p>
-              <button
-                className={styles.resetBtn}
-                onClick={() => setSearchTerm("")}
-              >
-                Clear Search
-              </button>
+              {searchTerm && (
+                <button
+                  className={styles.resetBtn}
+                  onClick={() => setSearchTerm("")}
+                >
+                  Clear Search
+                </button>
+              )}
             </div>
           )}
         </div>

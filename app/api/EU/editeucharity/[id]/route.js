@@ -4,7 +4,7 @@ import eualiance from "../../../../../Model/eucharity.js";
 
 export async function PATCH(request, context) {
   const { id } = await context.params;
-  const { action, company, Url } = await request.json();
+  const { action, company, Url, sector } = await request.json();
   try {
     await connectToDatabase();
     const charity = await eualiance.findById(id);
@@ -53,6 +53,13 @@ export async function PATCH(request, context) {
       await charity.save();
       return NextResponse.json(
         { message: "Url updated successfully." },
+        { status: 200 }
+      );
+    } else if (action === "update-sector") {
+      charity.sector = sector !== undefined ? sector : "";
+      await charity.save();
+      return NextResponse.json(
+        { message: "Sector updated successfully." },
         { status: 200 }
       );
     } else {
